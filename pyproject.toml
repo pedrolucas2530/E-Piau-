@@ -4,10 +4,36 @@ version = "0.1.0"
 description = "MVP de epidemiologia digital para monitoramento exploratorio de arboviroses no Piaui."
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "folium>=0.16.0",
+    "lxml>=5.2.1",
+    "nltk>=3.8.1",
+    "pandas>=2.2.2",
+    "plotly>=5.22.0",
+    "python-dateutil>=2.9.0",
+    "requests>=2.32.0",
+    "spacy>=3.7.4",
+    "streamlit>=1.36.0",
+    "streamlit-folium>=0.20.0",
+    "Unidecode>=1.3.8",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
 
 [build-system]
 requires = ["setuptools>=68"]

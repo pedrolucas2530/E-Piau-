@@ -168,135 +168,282 @@ def main() -> None:
         return
 
     st.title("EpiPiaui Monitor")
+    
+    # Criar abas: Análise, Sobre e Limitações
+    tab_analise, tab_sobre = st.tabs(["📊 Análise", "ℹ️ Sobre"])
+    
+    with tab_analise:
+        with st.sidebar:
+            st.header("Filtros")
+            doencas = sorted(mencoes["doenca"].dropna().unique())
+            doencas_selecionadas = st.multiselect("Doença", doencas, default=doencas)
 
-    with st.sidebar:
-        st.header("Filtros")
-        doencas = sorted(mencoes["doenca"].dropna().unique())
-        doencas_selecionadas = st.multiselect("Doença", doencas, default=doencas)
+            fontes = sorted(mencoes["fonte"].dropna().unique())
+            fontes_selecionadas = st.multiselect("Fonte", fontes, default=fontes)
 
-        fontes = sorted(mencoes["fonte"].dropna().unique())
-        fontes_selecionadas = st.multiselect("Fonte", fontes, default=fontes)
-
-        municipios = sorted(mencoes["municipio"].dropna().unique())
-        municipios_selecionados = st.multiselect(
-            "Município",
-            municipios,
-            default=municipios,
-        )
-
-        confianca_minima = st.slider("Confiança mínima", 0.0, 1.0, 0.0, 0.05)
-
-    filtradas = mencoes[
-        mencoes["doenca"].isin(doencas_selecionadas)
-        & mencoes["fonte"].isin(fontes_selecionadas)
-        & mencoes["municipio"].isin(municipios_selecionados)
-        & (mencoes["confianca"] >= confianca_minima)
-    ].copy()
-
-    metricas = st.columns(4)
-    metricas[0].metric("Notícias", int(filtradas["noticia_id"].nunique()))
-    metricas[1].metric("Menções", int(len(filtradas)))
-    metricas[2].metric("Municípios", int(filtradas["municipio"].nunique()))
-    metricas[3].metric("Doenças", int(filtradas["doenca"].nunique()))
-
-    coluna_mapa, coluna_graficos = st.columns([1.35, 1])
-    with coluna_mapa:
-        st.subheader("Mapa de menções")
-        st_folium(construir_mapa(filtradas), height=540, use_container_width=True)
-
-    with coluna_graficos:
-        st.subheader("Distribuição por doença")
-        contagem_doencas = (
-            filtradas.groupby("doenca")
-            .size()
-            .reset_index(name="mencoes")
-            .sort_values("mencoes", ascending=False)
-        )
-        if px:
-            grafico_doencas = px.bar(
-                contagem_doencas,
-                x="doenca",
-                y="mencoes",
-                color="doenca",
-                labels={"doenca": "Doença", "mencoes": "Menções"},
+            municipios = sorted(mencoes["municipio"].dropna().unique())
+            busca_municipio = st.text_input(
+                "🔍 Buscar município",
+                placeholder="Digite para filtrar (ex: Teresina)"
             )
-            grafico_doencas.update_layout(showlegend=False, margin=dict(l=0, r=0, t=20, b=0))
-            st.plotly_chart(grafico_doencas, use_container_width=True)
-        else:
-            st.bar_chart(contagem_doencas.set_index("doenca"))
-
-        st.subheader("Linha temporal")
-        serie_temporal = (
-            filtradas.dropna(subset=["mes"])
-            .groupby(["mes", "doenca"])
-            .size()
-            .reset_index(name="mencoes")
-        )
-        if px:
-            grafico_tempo = px.line(
-                serie_temporal,
-                x="mes",
-                y="mencoes",
-                color="doenca",
-                markers=True,
-                labels={"mes": "Mês", "mencoes": "Menções", "doenca": "Doença"},
+            if busca_municipio:
+                municipios_filtrados = [
+                    m for m in municipios
+                    if busca_municipio.lower() in m.lower()
+                ]
+            else:
+                municipios_filtrados = municipios
+            
+            municipios_selecionados = st.multiselect(
+                "Município",
+                municipios_filtrados,
+                default=municipios_filtrados,
             )
-            grafico_tempo.update_layout(margin=dict(l=0, r=0, t=20, b=0))
-            st.plotly_chart(grafico_tempo, use_container_width=True)
-        else:
-            st.line_chart(
-                serie_temporal.pivot_table(
-                    index="mes",
-                    columns="doenca",
-                    values="mencoes",
-                    aggfunc="sum",
-                    fill_value=0,
+
+            st.divider()
+            st.subheader("Intervalo de datas")
+            mencoes["data_publicacao"] = pd.to_datetime(
+                mencoes["data_publicacao"],
+                errors="coerce",
+            )
+            data_min = mencoes["data_publicacao"].min()
+            data_max = mencoes["data_publicacao"].max()
+            
+            data_inicio, data_fim = st.date_input(
+                "Selecione intervalo",
+                value=(data_min.date(), data_max.date()),
+                min_value=data_min.date(),
+                max_value=data_max.date(),
+            )
+
+            st.divider()
+            confianca_minima = st.slider("Confiança mínima", 0.0, 1.0, 0.0, 0.05)
+
+        
+        filtradas = mencoes[
+            mencoes["doenca"].isin(doencas_selecionadas)
+            & mencoes["fonte"].isin(fontes_selecionadas)
+            & mencoes["municipio"].isin(municipios_selecionados)
+            & (mencoes["confianca"] >= confianca_minima)
+            & (mencoes["data_publicacao"].dt.date >= data_inicio)
+            & (mencoes["data_publicacao"].dt.date <= data_fim)
+        ].copy()
+
+        metricas = st.columns(4)
+        metricas[0].metric("Notícias", int(filtradas["noticia_id"].nunique()))
+        metricas[1].metric("Menções", int(len(filtradas)))
+        metricas[2].metric("Municípios", int(filtradas["municipio"].nunique()))
+        metricas[3].metric("Doenças", int(filtradas["doenca"].nunique()))
+
+        coluna_mapa, coluna_graficos = st.columns([1.35, 1])
+        with coluna_mapa:
+            st.subheader("Mapa de menções")
+            st_folium(construir_mapa(filtradas), height=540, use_container_width=True)
+
+        with coluna_graficos:
+            st.subheader("Distribuição por doença")
+            contagem_doencas = (
+                filtradas.groupby("doenca")
+                .size()
+                .reset_index(name="mencoes")
+                .sort_values("mencoes", ascending=False)
+            )
+            if px:
+                grafico_doencas = px.bar(
+                    contagem_doencas,
+                    x="doenca",
+                    y="mencoes",
+                    color="doenca",
+                    labels={"doenca": "Doença", "mencoes": "Menções"},
                 )
-            )
+                grafico_doencas.update_layout(showlegend=False, margin=dict(l=0, r=0, t=20, b=0))
+                st.plotly_chart(grafico_doencas, use_container_width=True)
+            else:
+                st.bar_chart(contagem_doencas.set_index("doenca"))
 
-    st.subheader("Registros extraídos")
-    tabela = filtradas[
-        [
-            "data_publicacao",
-            "fonte",
-            "titulo",
-            "doenca",
-            "municipio",
-            "sintomas",
-            "confianca",
-            "sentenca",
-            "url",
-        ]
-    ].copy()
-    tabela["data_publicacao"] = tabela["data_publicacao"].dt.date.astype(str)
-    tabela["sintomas"] = tabela["sintomas"].apply(lambda valores: ", ".join(valores))
-    tabela = tabela.rename(
-        columns={
-            "data_publicacao": "Data",
-            "fonte": "Fonte",
-            "titulo": "Título",
-            "doenca": "Doença",
-            "municipio": "Município",
-            "sintomas": "Sintomas",
-            "confianca": "Confiança",
-            "sentenca": "Sentença",
-            "url": "URL",
-        }
-    )
-    st.dataframe(
-        tabela,
-        use_container_width=True,
-        hide_index=True,
-        column_config={
-            "URL": st.column_config.LinkColumn("URL"),
-            "Confiança": st.column_config.ProgressColumn(
-                "Confiança",
-                min_value=0,
-                max_value=1,
-                format="%.2f",
-            ),
-        },
-    )
+            st.subheader("Linha temporal")
+            serie_temporal = (
+                filtradas.dropna(subset=["mes"])
+                .groupby(["mes", "doenca"])
+                .size()
+                .reset_index(name="mencoes")
+            )
+            if px:
+                grafico_tempo = px.line(
+                    serie_temporal,
+                    x="mes",
+                    y="mencoes",
+                    color="doenca",
+                    markers=True,
+                    labels={"mes": "Mês", "mencoes": "Menções", "doenca": "Doença"},
+                )
+                grafico_tempo.update_layout(margin=dict(l=0, r=0, t=20, b=0))
+                st.plotly_chart(grafico_tempo, use_container_width=True)
+            else:
+                st.line_chart(
+                    serie_temporal.pivot_table(
+                        index="mes",
+                        columns="doenca",
+                        values="mencoes",
+                        aggfunc="sum",
+                        fill_value=0,
+                    )
+                )
+
+        st.subheader("Registros extraídos")
+        tabela = filtradas[
+            [
+                "data_publicacao",
+                "fonte",
+                "titulo",
+                "doenca",
+                "municipio",
+                "sintomas",
+                "confianca",
+                "sentenca",
+                "url",
+            ]
+        ].copy()
+        tabela["data_publicacao"] = tabela["data_publicacao"].dt.date.astype(str)
+        tabela["sintomas"] = tabela["sintomas"].apply(lambda valores: ", ".join(valores))
+        tabela = tabela.rename(
+            columns={
+                "data_publicacao": "Data",
+                "fonte": "Fonte",
+                "titulo": "Título",
+                "doenca": "Doença",
+                "municipio": "Município",
+                "sintomas": "Sintomas",
+                "confianca": "Confiança",
+                "sentenca": "Sentença",
+                "url": "URL",
+            }
+        )
+        st.dataframe(
+            tabela,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "URL": st.column_config.LinkColumn("URL"),
+                "Confiança": st.column_config.ProgressColumn(
+                    "Confiança",
+                    min_value=0,
+                    max_value=1,
+                    format="%.2f",
+                ),
+            },
+        )
+    
+    with tab_sobre:
+        st.header("Sobre o EpiPiaui Monitor")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("Objetivo")
+            st.write("""
+O **EpiPiaui Monitor** é um Produto Mínimo Viável (MVP) acadêmico que demonstra a aplicação prática 
+de técnicas de Epidemiologia Digital no contexto do Piauí. 
+
+Seu objetivo é validar a viabilidade técnica de um fluxo integrado de:
+- ✅ Coleta de dados públicos de notícias
+- ✅ Processamento de linguagem natural (PLN)
+- ✅ Extração de entidades epidemiológicas
+- ✅ Visualização geográfica e temporal
+            """)
+            
+            st.subheader("Período de dados")
+            st.write("""
+Os dados processados cobrem o período de **janeiro a julho de 2024**, 
+com foco especial em arboviroses (Dengue, Zika, Chikungunya) no estado do Piauí.
+            """)
+        
+        with col2:
+            st.subheader("Tecnologias utilizadas")
+            st.write("""
+- **Python 3.11**: Linguagem de programação
+- **spaCy**: Processamento de linguagem natural
+- **SQLite**: Armazenamento de dados
+- **Streamlit**: Interface web
+- **Folium/Leaflet**: Mapas geográficos
+- **Pandas**: Análise de dados
+- **Plotly**: Visualizações interativas
+            """)
+        
+        st.divider()
+        st.subheader("Limitações Deliberadas")
+        
+        col_lim1, col_lim2 = st.columns(2)
+        with col_lim1:
+            st.warning("""
+**❌ NÃO é um Sistema Oficial**
+- Este sistema não substitui os sistemas oficiais de vigilância epidemiológica
+- Não realiza diagnóstico epidemiológico
+- Não deve ser usado como fonte única de decisão em saúde pública
+            """)
+        
+        with col_lim2:
+            st.warning("""
+**⚠️ Escopo da Prova de Conceito**
+- Utiliza dados históricos verificados de 2024
+- Não realiza monitoramento contínuo
+- Sujeito a variações na disponibilidade de dados em portais
+- Precisão limitada pelo tratamento de linguagem natural
+            """)
+        
+        st.divider()
+        st.subheader("Questões técnicas frequentes")
+        
+        with st.expander("Como os dados são coletados?"):
+            st.write("""
+Os dados são coletados de fontes públicas do Piauí:
+- **G1 Piauí**: Portal de notícias
+- **Cidade Verde**: Mídia regional
+- **SESAPI**: Boletins epidemiológicos oficiais
+
+O processo usa web scraping automatizado com tratamento de erros e normalização.
+            """)
+        
+        with st.expander("Como são extraídas as entidades (doenças, municípios, sintomas)?"):
+            st.write("""
+Utilizamos **Named Entity Recognition (NER)** com a biblioteca spaCy:
+1. Modelo spaCy em português (`pt_core_news_lg`)
+2. Entity Ruler customizado com padrões epidemiológicos
+3. Heurística de co-ocorrência: doença e município na mesma sentença
+4. Pontuação de confiança baseada na presença de sintomas
+
+Isso permite rastreabilidade total - cada menção preserva a sentença original.
+            """)
+        
+        with st.expander("Por que alguns municípios têm mais menções que outros?"):
+            st.write("""
+As menções refletem:
+- Frequência de publicação de notícias (Teresina tem mais mídia)
+- Severidade ou surtos reportados
+- Acessibilidade e qualidade dos dados públicos disponíveis
+- Não representam necessariamente incidência epidemiológica real
+            """)
+        
+        with st.expander("Como interpretar a 'Confiança'?"):
+            st.write("""
+A confiança é uma pontuação de 0 a 1 calculada por:
+- **Base**: 0.6 se doença + município aparecem na mesma sentença
+- **+0.1**: Se há pelo menos um sintoma mencionado
+- **+0.1**: Se doença aparece no título da notícia
+- **Máximo**: 0.8
+
+Menções com confiança > 0.7 são mais confiáveis.
+            """)
+        
+        st.divider()
+        st.subheader("Próximas melhorias")
+        st.info("""
+- Adicionar validação manual de menções
+- Incorporar classificação supervisionada para reduzir falsos positivos
+- Expandir período histórico de dados
+- Integrar dados de vigilância oficial para comparação
+- Documentação de API para integração com sistemas externos
+        """)
+
 
 
 if __name__ == "__main__":
