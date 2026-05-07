@@ -1,0 +1,25 @@
+
+
+# Ignora regras locais do VS Code AI
+.github\instructions\codacy.instructions.md
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Dados locais gerados pelo prototipo
+dados/*.sqlite
+dados/*.sqlite3
+dados/brutos/ao_vivo_*.json
+dados/processados/*.json
+!dados/brutos/amostra_noticias.json
+!dados/brutos/sementes_noticias_reais_2024.json
+!dados/processados/.gitkeep
+
+# Streamlit
+.streamlit/secrets.toml

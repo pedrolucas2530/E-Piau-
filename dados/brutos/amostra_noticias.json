@@ -1,0 +1,57 @@
+[
+  {
+    "fonte": "Amostra didatica",
+    "titulo": "SESAPI reforca alerta para casos de dengue em municipios do sul do Piaui",
+    "texto": "A Secretaria de Estado da Saude informou que Bom Jesus e Currais registraram aumento de notificacoes de dengue no primeiro semestre de 2024. Segundo o boletim, moradores relataram febre, dor no corpo e dor atras dos olhos. A pasta orienta as equipes municipais a intensificar visitas domiciliares e eliminar focos do mosquito.",
+    "data_publicacao": "2024-03-14",
+    "url": "https://example.org/amostras/dengue-bom-jesus-currais",
+    "bruto": {
+      "tipo": "amostra_sintetica",
+      "observacao": "Registro sintetico para demonstracao offline do fluxo do MVP."
+    }
+  },
+  {
+    "fonte": "Amostra didatica",
+    "titulo": "Teresina amplia acoes contra chikungunya durante periodo chuvoso",
+    "texto": "Equipes de saude de Teresina ampliaram o monitoramento de chikungunya em bairros com maior volume de notificacoes. Pacientes atendidos nas unidades relataram febre alta, dores articulares e manchas vermelhas. A prefeitura informou que os dados serao compartilhados com a vigilancia estadual.",
+    "data_publicacao": "2024-04-08",
+    "url": "https://example.org/amostras/chikungunya-teresina",
+    "bruto": {
+      "tipo": "amostra_sintetica",
+      "observacao": "Registro sintetico para demonstracao offline do fluxo do MVP."
+    }
+  },
+  {
+    "fonte": "Amostra didatica",
+    "titulo": "Parnaiba investiga notificacoes de zika em unidades basicas",
+    "texto": "A vigilancia epidemiologica de Parnaiba informou que investiga notificacoes suspeitas de zika registradas entre janeiro e junho de 2024. Os relatos incluem exantema, coceira e febre baixa. A gestao municipal destacou que as amostras foram encaminhadas para confirmacao laboratorial.",
+    "data_publicacao": "2024-05-17",
+    "url": "https://example.org/amostras/zika-parnaiba",
+    "bruto": {
+      "tipo": "amostra_sintetica",
+      "observacao": "Registro sintetico para demonstracao offline do fluxo do MVP."
+    }
+  },
+  {
+    "fonte": "Amostra didatica",
+    "titulo": "Campo Maior e Barras intensificam visitas para reduzir focos do Aedes",
+    "texto": "Os municipios de Campo Maior e Barras anunciaram mutiroes de limpeza apos mencoes a dengue em comunicados locais. A nota tambem cita sintomas como nausea, vomito e dor de cabeca entre pessoas que buscaram atendimento. As acoes priorizam areas com acumulacao de agua parada.",
+    "data_publicacao": "2024-06-05",
+    "url": "https://example.org/amostras/dengue-campo-maior-barras",
+    "bruto": {
+      "tipo": "amostra_sintetica",
+      "observacao": "Registro sintetico para demonstracao offline do fluxo do MVP."
+    }
+  },
+  {
+    "fonte": "Amostra didatica",
+    "titulo": "Picos divulga orientacoes sobre arboviroses nas escolas",
+    "texto": "Em Picos, profissionais de saude realizaram palestras sobre dengue, zika e chikungunya nas escolas municipais. A campanha orientou estudantes a reconhecer febre, dor no corpo e dores articulares, alem de informar canais de atendimento para notificacoes suspeitas.",
+    "data_publicacao": "2024-02-22",
+    "url": "https://example.org/amostras/arboviroses-picos",
+    "bruto": {
+      "tipo": "amostra_sintetica",
+      "observacao": "Registro sintetico para demonstracao offline do fluxo do MVP."
+    }
+  }
+]
