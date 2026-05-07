@@ -131,9 +131,9 @@ O `EpiPiauiPLN` encadeia:
 
 ```mermaid
 graph LR
-    Sidebar["📋 Filtros<br/>- Doença<br/>- Fonte<br/>- Município<br/>- Data<br/>- Confiança"]
-    Tab1["📊 Análise<br/>Mapa + Gráficos"]
-    Tab2["ℹ️ Sobre<br/>Limitações<br/>FAQ"]
+    Sidebar["Filtros<br/>- Doença<br/>- Fonte<br/>- Município<br/>- Data<br/>- Confiança"]
+    Tab1["Análise<br/>Mapa + Gráficos"]
+    Tab2["ℹSobre<br/>Limitações<br/>FAQ"]
     
     Sidebar -->|Aplica| Tab1
     Tab1 -->|Exibe| Mapa["Mapa (Folium)"]
