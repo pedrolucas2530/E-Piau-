@@ -147,7 +147,7 @@ graph LR
     style Tab2 fill:#f8e8e8
 ```
 
-## Decisões de implementação
+## 5. Decisões de Implementação
 
 O EpiPiaui Monitor foi estruturado como um MVP reprodutível. A coleta, o processamento e a visualização são etapas separadas para facilitar auditoria e repetição dos experimentos.
 
@@ -157,37 +157,13 @@ O banco SQLite foi escolhido por ser leve, portátil e suficiente para a prova d
 
 Para PLN, o pipeline usa spaCy com `EntityRuler`. O modelo recomendado é `pt_core_news_lg`, mas há reserva para modelos menores ou para um pipeline básico em português. Essa decisão permite que a demonstração funcione mesmo em ambientes sem o modelo grande instalado.
 
-## Heurística de extração
+## 6. Heurística de Extração
 
 O protótipo considera uma menção válida quando uma doença e um município aparecem na mesma sentença. Sintomas na mesma sentença elevam a confiança. A presença de termo epidemiológico no título também aumenta levemente a pontuação.
 
 Essa escolha privilegia explicabilidade: cada registro extraído preserva a sentença original, permitindo revisão manual.
 
-## Dificuldades encontradas
-
-- Portais de notícia podem mudar HTML, URLs, paginação e metadados sem aviso.
-- O Cidade Verde retornou bloqueio Cloudflare 403 em parte das tentativas de coleta automatizada; nesses casos, o protótipo preserva a URL e usa texto curto de apoio marcado como reserva.
-- Nem toda página pública expõe data de publicação em formato padronizado.
-- Nomes de municípios podem aparecer com ou sem acento, exigindo normalização.
-- Ambiguidade textual: uma notícia pode citar vários municípios e várias doenças sem afirmar relação epidemiológica direta.
-- Dados de notícias não equivalem a notificações oficiais de saúde.
-
-## Limites deliberados
-
-- O MVP não realiza coleta contínua.
-- O período-alvo documentado é janeiro a julho de 2024.
-- O painel é exploratório e não deve ser usado como sistema oficial.
-- A amostra sintética permanece apenas como reserva didática; o fluxo padrão usa notícias e informes reais de 2024.
-
-## Possíveis melhorias
-
-- Adicionar validação manual de menções no painel.
-- Persistir HTML bruto além do texto extraído.
-- Incorporar classificação supervisionada para reduzir falso positivo.
-- Criar testes automatizados com páginas HTML congeladas.
-- Publicar um relatório de avaliação com precisão, revocação e exemplos anotados.
-
-## 5. Processo de Avaliação (Notebook 02)
+## 7. Processo de Avaliação (Notebook 02)
 
 ```mermaid
 graph LR
@@ -211,7 +187,7 @@ graph LR
     style L fill:#ffcccc
 ```
 
-**Métricas por tipo de entidade:**
+### Métricas por Tipo de Entidade
 
 ```
 DOENCA:
@@ -223,4 +199,26 @@ DOENCA:
   - F1 = 2 * (Precisão * Revocação) / (Precisão + Revocação)
 ```
 
-Decisões de implementação
+## 8. Dificuldades Encontradas
+
+- Portais de notícia podem mudar HTML, URLs, paginação e metadados sem aviso.
+- O Cidade Verde retornou bloqueio Cloudflare 403 em parte das tentativas de coleta automatizada; nesses casos, o protótipo preserva a URL e usa texto curto de apoio marcado como reserva.
+- Nem toda página pública expõe data de publicação em formato padronizado.
+- Nomes de municípios podem aparecer com ou sem acento, exigindo normalização.
+- Ambiguidade textual: uma notícia pode citar vários municípios e várias doenças sem afirmar relação epidemiológica direta.
+- Dados de notícias não equivalem a notificações oficiais de saúde.
+
+## 9. Limites Deliberados
+
+- O MVP não realiza coleta contínua.
+- O período-alvo documentado é janeiro a julho de 2024.
+- O painel é exploratório e não deve ser usado como sistema oficial.
+- A amostra sintética permanece apenas como reserva didática; o fluxo padrão usa notícias e informes reais de 2024.
+
+## 10. Possíveis Melhorias
+
+- Adicionar validação manual de menções no painel.
+- Persistir HTML bruto além do texto extraído.
+- Incorporar classificação supervisionada para reduzir falso positivo.
+- Criar testes automatizados com páginas HTML congeladas.
+- Publicar um relatório de avaliação com precisão, revocação e exemplos anotados.

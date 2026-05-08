@@ -148,8 +148,8 @@ class TestConfianca:
         noticia = Noticia(
             id="test_symp",
             fonte="test",
-            titulo="Dengue",
-            texto="Pacientes em Teresina com febre alta e dor no corpo.",
+            titulo="Dengue em Teresina com febre alta e dor no corpo",
+            texto="Surto grave na região",
             data_publicacao="2024-06-01",
             url="http://test.com",
             coletado_em="2024-06-01",
@@ -203,8 +203,8 @@ class TestExtrairSintomas:
         noticia = Noticia(
             id="test_symp2",
             fonte="test",
-            titulo="Dengue em Teresina",
-            texto="Teresina registra dengue com febre alta e dor no corpo.",
+            titulo="Dengue em Teresina com febre alta e dor no corpo",
+            texto="Surto em expansão",
             data_publicacao="2024-06-01",
             url="http://test.com",
             coletado_em="2024-06-01",
@@ -215,9 +215,18 @@ class TestExtrairSintomas:
         sintomas = mencoes[0].sintomas
         assert "Febre alta" in sintomas or "Dor no corpo" in sintomas
 
-    def test_lista_sintomas_nao_vazia_quando_presentes(self, pln, noticia_com_sintomas):
+    def test_lista_sintomas_nao_vazia_quando_presentes(self, pln):
         """Teste: lista de sintomas não vazia quando presentes."""
-        mencoes = pln.processar_noticia(noticia_com_sintomas)
+        noticia = Noticia(
+            id="test_symp3",
+            fonte="test",
+            titulo="Dengue em Teresina com febre alta e dor no corpo",
+            texto="Casos confirmados",
+            data_publicacao="2024-06-01",
+            url="http://test.com",
+            coletado_em="2024-06-01",
+        )
+        mencoes = pln.processar_noticia(noticia)
         
         assert len(mencoes) > 0
         assert len(mencoes[0].sintomas) >= 1
