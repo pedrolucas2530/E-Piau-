@@ -151,20 +151,88 @@ def construir_mapa(mencoes_filtradas: pd.DataFrame) -> folium.Map:
     return mapa
 
 
-def mostrar_estado_vazio() -> None:
+def mostrar_estado_vazio(motivo: str = "sem_dados") -> None:
+    """Exibe mensagem de estado vazio com orientação específica ao motivo.
+
+    motivos possíveis:
+      "sem_banco"       — arquivo SQLite não existe ainda
+      "sem_noticias"    — banco existe mas tabela noticias está vazia
+      "sem_mencoes"     — notícias coletadas mas PLN ainda não foi executado
+      "sem_dados"       — fallback genérico
+    """
     st.title("EpiPiaui Monitor")
-    st.info(
-        "Nenhum dado processado foi encontrado. Execute "
-        "`python scripts/executar_pipeline.py --modo reais` e recarregue esta página."
-    )
+
+    if motivo == "sem_banco":
+        st.warning("### Banco de dados não encontrado")
+        st.write(
+            "O arquivo SQLite ainda não foi criado. "
+            "Execute o pipeline completo para gerar os dados:"
+        )
+        st.code("python scripts/executar_pipeline.py --modo reais", language="bash")
+
+    elif motivo == "sem_noticias":
+        st.warning("### Nenhuma notícia coletada")
+        st.write("O banco existe mas está vazio. Colete notícias com:")
+        st.code("python scripts/coletar.py --modo reais", language="bash")
+        st.write("Em seguida processe com:")
+        st.code("python scripts/processar.py", language="bash")
+
+    elif motivo == "sem_mencoes":
+        st.info("### Notícias coletadas — processamento PLN pendente")
+        st.write(
+            "Existem notícias no banco, mas as menções ainda não foram extraídas. "
+            "Execute:"
+        )
+        st.code("python scripts/processar.py", language="bash")
+        st.write("Ou faça coleta + processamento de uma vez:")
+        st.code("python scripts/executar_pipeline.py --modo reais", language="bash")
+
+    else:
+        st.info(
+            "Nenhum dado processado foi encontrado. Execute o pipeline e recarregue:"
+        )
+        st.code("python scripts/executar_pipeline.py --modo reais", language="bash")
+
+    with st.expander("ℹ️ Primeiros passos"):
+        st.markdown("""
+**Fluxo completo do zero:**
+
+```bash
+# 1. Ativar ambiente virtual
+.venv\\Scripts\\Activate.ps1
+
+# 2. Coletar + processar em um comando
+python scripts/executar_pipeline.py --modo reais
+
+# 3. Abrir o painel
+streamlit run interface/painel.py
+```
+
+O banco SQLite fica em `dados/epipiaui_monitor.sqlite`.
+Para recomeçar do zero adicione `--reiniciar` ao comando de coleta.
+        """)
 
 
 def main() -> None:
     caminho_banco = str(CAMINHO_BANCO_PADRAO)
-    modificacao_banco = Path(caminho_banco).stat().st_mtime if Path(caminho_banco).exists() else 0.0
+    banco_path = Path(caminho_banco)
+
+    # — Banco inexistente —
+    if not banco_path.exists():
+        mostrar_estado_vazio("sem_banco")
+        return
+
+    modificacao_banco = banco_path.stat().st_mtime
     noticias, mencoes = ler_dados_painel(caminho_banco, modificacao_banco)
-    if noticias.empty or mencoes.empty:
-        mostrar_estado_vazio()
+
+    # — Banco vazio —
+    if noticias.empty:
+        mostrar_estado_vazio("sem_noticias")
+        return
+
+    # — Notícias coletadas mas PLN não rodou —
+    if mencoes.empty:
+        mostrar_estado_vazio("sem_mencoes")
         return
 
     st.title("EpiPiaui Monitor")
@@ -206,28 +274,45 @@ def main() -> None:
                 mencoes["data_publicacao"],
                 errors="coerce",
             )
-            data_min = mencoes["data_publicacao"].min()
-            data_max = mencoes["data_publicacao"].max()
-            
-            data_inicio, data_fim = st.date_input(
-                "Selecione intervalo",
-                value=(data_min.date(), data_max.date()),
-                min_value=data_min.date(),
-                max_value=data_max.date(),
-            )
+            datas_validas = mencoes["data_publicacao"].dropna()
+            if datas_validas.empty:
+                # Sem nenhuma data válida: usa placeholder fixo e não filtra por data
+                data_inicio = None
+                data_fim = None
+                st.caption("Nenhuma data válida encontrada nos dados.")
+            else:
+                data_min = datas_validas.min()
+                data_max = datas_validas.max()
+                data_inicio, data_fim = st.date_input(
+                    "Selecione intervalo",
+                    value=(data_min.date(), data_max.date()),
+                    min_value=data_min.date(),
+                    max_value=data_max.date(),
+                )
 
             st.divider()
             confianca_minima = st.slider("Confiança mínima", 0.0, 1.0, 0.0, 0.05)
 
         
-        filtradas = mencoes[
+        mascara = (
             mencoes["doenca"].isin(doencas_selecionadas)
             & mencoes["fonte"].isin(fontes_selecionadas)
             & mencoes["municipio"].isin(municipios_selecionados)
             & (mencoes["confianca"] >= confianca_minima)
-            & (mencoes["data_publicacao"].dt.date >= data_inicio)
-            & (mencoes["data_publicacao"].dt.date <= data_fim)
-        ].copy()
+        )
+        if data_inicio is not None and data_fim is not None:
+            mascara &= mencoes["data_publicacao"].dt.date >= data_inicio
+            mascara &= mencoes["data_publicacao"].dt.date <= data_fim
+
+        filtradas = mencoes[mascara].copy()
+
+        # — Sem resultados após filtros —
+        if filtradas.empty:
+            st.info(
+                "Nenhuma menção encontrada com os filtros selecionados. "
+                "Tente ampliar o intervalo de datas ou reduzir os filtros na barra lateral."
+            )
+            return
 
         metricas = st.columns(4)
         metricas[0].metric("Notícias", int(filtradas["noticia_id"].nunique()))
@@ -345,10 +430,10 @@ O **EpiPiaui Monitor** é um Produto Mínimo Viável (MVP) acadêmico que demons
 de técnicas de Epidemiologia Digital no contexto do Piauí. 
 
 Seu objetivo é validar a viabilidade técnica de um fluxo integrado de:
-- ✅ Coleta de dados públicos de notícias
-- ✅ Processamento de linguagem natural (PLN)
-- ✅ Extração de entidades epidemiológicas
-- ✅ Visualização geográfica e temporal
+- Coleta de dados públicos de notícias
+- Processamento de linguagem natural (PLN)
+- Extração de entidades epidemiológicas
+- Visualização geográfica e temporal
             """)
             
             st.subheader("Período de dados")
@@ -375,7 +460,7 @@ com foco especial em arboviroses (Dengue, Zika, Chikungunya) no estado do Piauí
         col_lim1, col_lim2 = st.columns(2)
         with col_lim1:
             st.warning("""
-**❌ NÃO é um Sistema Oficial**
+**NÃO é um Sistema Oficial**
 - Este sistema não substitui os sistemas oficiais de vigilância epidemiológica
 - Não realiza diagnóstico epidemiológico
 - Não deve ser usado como fonte única de decisão em saúde pública
@@ -383,7 +468,7 @@ com foco especial em arboviroses (Dengue, Zika, Chikungunya) no estado do Piauí
         
         with col_lim2:
             st.warning("""
-**⚠️ Escopo da Prova de Conceito**
+**Escopo da Prova de Conceito**
 - Utiliza dados históricos verificados de 2024
 - Não realiza monitoramento contínuo
 - Sujeito a variações na disponibilidade de dados em portais

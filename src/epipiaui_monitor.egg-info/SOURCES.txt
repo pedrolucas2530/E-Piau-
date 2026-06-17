@@ -17,5 +17,6 @@ src/epipiaui_monitor/coletores/noticias.py
 src/epipiaui_monitor/coletores/sementes.py
 src/epipiaui_monitor/pln/__init__.py
 src/epipiaui_monitor/pln/processador.py
+tests/test_banco.py
 tests/test_pln.py
 tests/test_utilitarios.py

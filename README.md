@@ -40,6 +40,140 @@ Abre o painel:
 streamlit run interface/painel.py
 ```
 
+## Instruções Técnicas Completas
+
+### 1. Pré-requisitos
+
+```powershell
+# Verificar versão do Python (requerido 3.10+)
+python --version
+
+# Verificar ambiente virtual ativado
+# Você deve ver (.venv) no início do prompt do terminal
+```
+
+### 2. Ativar Ambiente Virtual
+
+```powershell
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+
+# Se der erro de política de execução
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+.\.venv\Scripts\Activate.ps1
+```
+
+### 3. Coletar Dados (escolha um modo)
+
+```powershell
+# Opção A: Usar notícias reais pré-verificadas (janeiro-julho 2024)
+python scripts/coletar.py --modo reais
+
+# Opção B: Coletar ao vivo dos portais (com filtro de período)
+python scripts/coletar.py --modo ao-vivo --data-inicio 2024-01-01 --data-fim 2024-06-30
+
+# Opção C: Dados didáticos (amostra sintética offline)
+python scripts/coletar.py --modo amostra
+
+# Opção D: Combinar sementes + coleta ao vivo
+python scripts/coletar.py --modo ambos
+
+# Opção E: Resetar banco (limpa tudo antes de coletar)
+python scripts/coletar.py --modo reais --reiniciar
+```
+
+### 4. Processar Notícias (Extração PLN)
+
+```powershell
+# Extrair doenças, municípios e sintomas usando spaCy
+python scripts/processar.py
+
+# OU fazer coleta + processamento em um passo
+python scripts/executar_pipeline.py --modo reais
+```
+
+### 5. Iniciar o Painel
+
+```powershell
+# Comando básico
+streamlit run interface/painel.py
+
+# Com Python explícito (se houver conflito)
+python -m streamlit run interface/painel.py
+
+# Especificar porta diferente (padrão: 8501)
+streamlit run interface/painel.py --server.port 8502
+```
+
+### 6. Acessar o Painel
+
+O navegador abre automaticamente em:
+
+```
+http://localhost:8501
+```
+
+Se não abrir, acesse manualmente a URL acima.
+
+### 7. Recursos do Painel
+
+- **Barra Lateral**: Filtros por doença, fonte, município, data e nível de confiança
+- **Aba Análise**: Mapa interativo do Piauí, gráficos de distribuição, série temporal e tabela de registros
+- **Aba Sobre**: Informações do projeto, limitações e FAQ
+
+### 8. Dados Persistem?
+
+**Sim!** O banco SQLite acumula dados de múltiplas execuções. Se você executar:
+
+```powershell
+# 1ª coleta
+python scripts/coletar.py --modo reais          # Salva 100 notícias
+
+# 2ª coleta
+python scripts/coletar.py --modo ao-vivo        # Adiciona mais notícias (sem deletar as 100)
+
+# Painel mostrará: 100 + novas = todos os registros juntos
+```
+
+Para começar do zero, use a flag `--reiniciar`.
+
+### 9. Troubleshooting
+
+```powershell
+# Erro: "ModuleNotFoundError: No module named 'streamlit'"
+pip install -e ".[dev]"
+
+# Erro: "Banco de dados não encontrado"
+python scripts/coletar.py --modo reais
+
+# Erro: Porta 8501 já em uso
+streamlit run interface/painel.py --server.port 8502
+
+# Erro: Modelo spaCy não encontrado
+python -m spacy download pt_core_news_lg
+
+# Limpar cache do Streamlit
+streamlit cache clear
+```
+
+### 10. Workflow Completo (do Zero)
+
+```powershell
+# 1. Ativar ambiente
+.\.venv\Scripts\Activate.ps1
+
+# 2. Coletar dados
+python scripts/coletar.py --modo reais
+
+# 3. Processar (PLN)
+python scripts/processar.py
+
+# 4. Iniciar painel
+streamlit run interface/painel.py
+
+# 5. Navegador abre automaticamente em http://localhost:8501
+```
+
 ## Fontes Reais de 2024
 
 O arquivo `dados/brutos/sementes_noticias_reais_2024.json` lista URLs reais e verificáveis usadas pelo modo `reais`. Ele inclui:

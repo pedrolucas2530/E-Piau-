@@ -54,6 +54,14 @@ class ColetorNoticiasSemeadas:
         if baixar and not url.lower().endswith(".pdf"):
             try:
                 resposta = self.sessao.get(url, timeout=self.tempo_limite)
+
+                # Fix de encoding: servidores como o Cidade Verde declaram
+                # iso-8859-1 mas entregam conteúdo em UTF-8, causando títulos
+                # com "Ã³" no lugar de "ó". Forçamos UTF-8 nesses casos.
+                enc = (resposta.encoding or "").lower().replace("-", "")
+                if enc in ("iso88591", "latin1", "windows1252"):
+                    resposta.encoding = "utf-8"
+
                 bruto.update(
                     {
                         "codigo_status": resposta.status_code,

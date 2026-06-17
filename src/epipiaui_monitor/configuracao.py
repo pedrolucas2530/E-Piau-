@@ -52,4 +52,11 @@ FONTES_NOTICIAS = (
         url_rss=None,
         palavras_chave_link=("dengue", "zika", "chikungunya", "arbovirose"),
     ),
+    ConfiguracaoFonte(
+        nome="Meio News",
+        url_base="https://www.meionews.com/",
+        url_listagem="https://www.meionews.com/noticias",
+        url_rss=None,
+        palavras_chave_link=("dengue", "zika", "chikungunya", "saude", "arbovirose", "piaui"),
+    ),
 )

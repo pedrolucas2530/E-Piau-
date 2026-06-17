@@ -1,0 +1,699 @@
+{
+  "versao": "1.0",
+  "anotado_em": "2026-06-15",
+  "anotador": "Pedro Lucas Alves de Assis Cardoso",
+  "criterios": [
+    "Mencao valida = doenca arbovirose (Dengue/Zika/Chikungunya) associada a municipio piauiense com presenca confirmada ou suspeita da doenca (casos, obitos, alerta, risco de infestacao).",
+    "Mencao negativa = artigo informa ausencia da doenca no municipio → NAO conta como mencao valida.",
+    "Mencao geografica = municipio citado apenas como referencia espacial (ex: '600 km de Teresina') → NAO conta como mencao valida.",
+    "Artigos sobre vacinacao sem mencao de casos/obitos/alertas epidemiologicos → mencoes de municipio+doenca SIM contam (vacinacao e dado epidemiologico relevante).",
+    "Unidade de comparacao: (noticia_id, doenca, municipio) — sem duplicatas por artigo."
+  ],
+  "anotacoes": [
+    {
+      "noticia_id": "5d8a7f95b1266e7b702224ae0a29048e",
+      "idx": 1,
+      "titulo": "Teresina recolhe doses da vacina contra a dengue do Butantan",
+      "fonte": "G1 Piaui",
+      "data_publicacao": "2024-01-01",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        }
+      ],
+      "observacao": "Artigo sobre suspensao da vacina Butantan; FMS Teresina recolheu doses. Dengue + Teresina valido como dado epidemiologico (vacinacao contra dengue em Teresina)."
+    },
+    {
+      "noticia_id": "2c3adbf6085f3e77a2f1acf26661fb10",
+      "idx": 2,
+      "titulo": "Entenda por que vacina da dengue do Butantan foi suspensa apos casos graves",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-01-01",
+      "mencoes_corretas": [],
+      "observacao": "Artigo de contexto nacional; nenhum municipio piauiense especifico mencionado."
+    },
+    {
+      "noticia_id": "f51609a7144f859eea26d27f4363ceb7",
+      "idx": 3,
+      "titulo": "Nenhum vacinado contra a dengue em Teresina teve complicacoes, afirma FMS",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-01-01",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        }
+      ],
+      "observacao": "Profissionais vacinados em Teresina sem complicacoes. Dengue + Teresina valido."
+    },
+    {
+      "noticia_id": "f57c26e705251cacbf1edb840b832c67",
+      "idx": 4,
+      "titulo": "Dengue: FMS espera nota tecnica do Ministerio da Saude sobre suspensao de vacina",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-01-01",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        }
+      ],
+      "observacao": "FMS Teresina aguarda nota tecnica sobre vacina contra dengue. Dengue + Teresina valido."
+    },
+    {
+      "noticia_id": "49ba0dcfeaa2e547f37ed7b746cf7e81",
+      "idx": 5,
+      "titulo": "Butantan mantem estudos apos suspensao de vacina da dengue",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-01-01",
+      "mencoes_corretas": [],
+      "observacao": "Contexto nacional; nenhum municipio piauiense especifico."
+    },
+    {
+      "noticia_id": "c181a378344c1e89833aaaedb89bf717",
+      "idx": 6,
+      "titulo": "Ministerio da Saude suspende preventivamente vacina contra a dengue do Butantan",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-01-01",
+      "mencoes_corretas": [],
+      "observacao": "Contexto nacional; nenhum municipio piauiense especifico."
+    },
+    {
+      "noticia_id": "3e398c7c64f5082d80ac58360a60deb4",
+      "idx": 7,
+      "titulo": "Piaui tem reducao de 33% nos casos de dengue nas primeiras semanas de 2024",
+      "fonte": "Governo do Piaui / SESAPI",
+      "data_publicacao": "2024-01-29",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Currais"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Ribeiro Goncalves"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Parnaiba"
+        }
+      ],
+      "observacao": "Municipios lideres em notificacoes de dengue SE1-SE4/2024. Chikungunya mencionada sem municipio especifico — nao conta."
+    },
+    {
+      "noticia_id": "fb5417ceedae8a649ae7514bfbc594e2",
+      "idx": 8,
+      "titulo": "Informe Epidemiologico Dengue, Zika e Chikungunya - Semana Epidemiologica 4 de 2024",
+      "fonte": "SESAPI",
+      "data_publicacao": "2024-01-29",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Currais"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Ribeiro Goncalves"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Parnaiba"
+        }
+      ],
+      "observacao": "Informe SE4 aponta municipios lideres em casos provaveis de dengue. Zika/Chikungunya mencionadas apenas no nivel estadual."
+    },
+    {
+      "noticia_id": "538433b3a5f876921d65fd65d2b95d6c",
+      "idx": 9,
+      "titulo": "Piaui mantem indice satisfatorio de incidencia de dengue, com reducao de 33% dos casos em 2024",
+      "fonte": "SESAPI",
+      "data_publicacao": "2024-01-29",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Currais"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        }
+      ],
+      "observacao": "Texto cita 'Teresina liderou com 123 notificacoes, seguida por Currais (58) e Bom Jesus (48)' em sentenca separada do termo 'dengue'. Mencoes validas pelo contexto do artigo, mas o pipeline nao as extrai (FN estrutural por heuristica de co-ocorrencia sentencial)."
+    },
+    {
+      "noticia_id": "e98da41a2c7c957daaa546337f65b58f",
+      "idx": 10,
+      "titulo": "Centro de Operacoes de Emergencia vai monitorar casos de dengue no Piaui",
+      "fonte": "Ministerio da Saude",
+      "data_publicacao": "2024-02-15",
+      "mencoes_corretas": [],
+      "observacao": "Dengue mencionada apenas em nivel estadual (Piaui); nenhum municipio especifico."
+    },
+    {
+      "noticia_id": "5702e23ea26c0fce0e26262818e17ed3",
+      "idx": 11,
+      "titulo": "Piaui registra aumento nos casos provaveis de dengue e Sesapi reforca acoes de combate a doenca",
+      "fonte": "SESAPI",
+      "data_publicacao": "2024-02-19",
+      "mencoes_corretas": [],
+      "observacao": "Dengue citada em nivel estadual; nenhum municipio especifico nomeado."
+    },
+    {
+      "noticia_id": "bba91fad4fcd59351c1559a6c56057e5",
+      "idx": 12,
+      "titulo": "Casos provaveis de dengue crescem no Piaui e carro fumace sera usado para controle da doenca",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-02-20",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Currais"
+        },
+        {
+          "doenca": "Chikungunya",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Chikungunya",
+          "municipio": "Currais"
+        }
+      ],
+      "observacao": "Bom Jesus e Currais em situacao de alerta para dengue e chikungunya; carro fumace liberado para ambos."
+    },
+    {
+      "noticia_id": "ca07b43fda67b79e967167f5aec9372c",
+      "idx": 13,
+      "titulo": "Cidades com mais registros de casos de dengue contarao com carros fumaces",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-02-22",
+      "mencoes_corretas": [],
+      "observacao": "Artigo descreve acao estadual sem nomear municipios especificos no texto reserva."
+    },
+    {
+      "noticia_id": "c869724570081afd55920d529476d288",
+      "idx": 14,
+      "titulo": "Piaui registra mais de 7 mil notificacoes de casos de dengue; veja cidades mais afetadas",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-02-28",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Currais"
+        }
+      ],
+      "observacao": "Teresina, Bom Jesus e Currais citados como municipios mais afetados. 'Dengue' ocorre em sentenca anterior; mencoes validas pelo contexto mas constituem FN estrutural do pipeline."
+    },
+    {
+      "noticia_id": "c106c6e5a04e29e4102afadab433d93b",
+      "idx": 15,
+      "titulo": "Piaui tem aumento nos casos notificados de dengue; zika e chikungunya apresentam reducao",
+      "fonte": "G1 Piaui",
+      "data_publicacao": "2024-03-01",
+      "mencoes_corretas": [],
+      "observacao": "Texto reserva nao especifica municipios; mencao vaga a 'municipios piauienses em boletins de arboviroses'."
+    },
+    {
+      "noticia_id": "8afa395778be955b6605a6d64737f975",
+      "idx": 16,
+      "titulo": "Picos ainda nao registrou casos de dengue em 2024",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-03-05",
+      "mencoes_corretas": [],
+      "observacao": "MENCAO NEGATIVA: artigo informa explicitamente que Picos NAO teve casos de dengue. Extracao automatica de (Dengue, Picos) e FALSO POSITIVO — doenca ausente no municipio."
+    },
+    {
+      "noticia_id": "bfc22b5e8911fb1f6165dfc52304a79e",
+      "idx": 17,
+      "titulo": "Piaui registra 1a morte por dengue em 2024 em Bom Jesus; outro obito esta sendo investigado na cidade",
+      "fonte": "G1 Piaui",
+      "data_publicacao": "2024-03-07",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        }
+      ],
+      "observacao": "Primeira morte por dengue de 2024 no Piaui, registrada em Bom Jesus."
+    },
+    {
+      "noticia_id": "02ff2fcc6d3ba28dff0e6d69c5c014dc",
+      "idx": 18,
+      "titulo": "Piaui registra primeira morte por dengue em 2024; paciente e de Bom Jesus",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-03-07",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        }
+      ],
+      "observacao": "Obito em Bom Jesus. Teresina aparece no texto como referencia geografica ('600 km de Teresina'), NAO como local de caso — extracao de (Dengue, Teresina) e FALSO POSITIVO."
+    },
+    {
+      "noticia_id": "b2586012821a232ccb67b30d1c04e502",
+      "idx": 19,
+      "titulo": "Piaui confirma 2a morte por dengue em 2024; morte de crianca sera apurada",
+      "fonte": "G1 Piaui",
+      "data_publicacao": "2024-03-15",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Baixa Grande do Ribeiro"
+        }
+      ],
+      "observacao": "Dois obitos confirmados: Bom Jesus (2 mortes) e Baixa Grande do Ribeiro (crianca em apuracao). Pipeline extrai apenas Bom Jesus — Baixa Grande do Ribeiro e FN (sentenca sem 'dengue' explicito)."
+    },
+    {
+      "noticia_id": "b65fe32b9ecd8d6c7d0281cfc72d4eac",
+      "idx": 20,
+      "titulo": "Informe Epidemiologico Dengue, Zika e Chikungunya - Semana Epidemiologica 12 de 2024",
+      "fonte": "SESAPI",
+      "data_publicacao": "2024-03-25",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Currais"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Parnaiba"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Guadalupe"
+        }
+      ],
+      "observacao": "Informe SE12 cita municipios com mais casos provaveis. 'Dengue' ocorre em sentenca anterior a lista de municipios — FN estrutural do pipeline para todos os 5 pares."
+    },
+    {
+      "noticia_id": "787c37e7cc5f811bbe9929aaf445aa0f",
+      "idx": 21,
+      "titulo": "Numero de casos de dengue aumenta 91,5% entre 2023 e 2024 no Piaui",
+      "fonte": "G1 Piaui",
+      "data_publicacao": "2024-03-26",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Currais"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Parnaiba"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Guadalupe"
+        }
+      ],
+      "observacao": "Municipios com registros relevantes de dengue em 2024. FN estrutural: municipios em sentenca sem 'dengue' explicito."
+    },
+    {
+      "noticia_id": "853456047262154ca34c59f71fdc535e",
+      "idx": 22,
+      "titulo": "Mais duas mortes por dengue sao confirmadas no Piaui; obitos no ano triplicam em relacao a 2023",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-03-28",
+      "mencoes_corretas": [],
+      "observacao": "Artigo nao especifica municipios dos obitos no texto reserva."
+    },
+    {
+      "noticia_id": "80308f4a81a45134df330bcab20bc90c",
+      "idx": 23,
+      "titulo": "Piaui ja registra 15 mortes por dengue; entre as vitimas um menino de 12 anos",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-04-10",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        }
+      ],
+      "observacao": "Teresina (3 mortes) e Bom Jesus (maior numero de obitos). FN estrutural: sentenca com municipios nao contem 'dengue' explicito."
+    },
+    {
+      "noticia_id": "fee7c253f1d8b3f6496640aa5c8823bc",
+      "idx": 24,
+      "titulo": "Mais duas mortes por dengue sao confirmadas em Baixa Grande do Ribeiro e Floriano",
+      "fonte": "Portal B1",
+      "data_publicacao": "2024-05-15",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Baixa Grande do Ribeiro"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Floriano"
+        }
+      ],
+      "observacao": "Obitos por dengue confirmados em Baixa Grande do Ribeiro e Floriano."
+    },
+    {
+      "noticia_id": "96a3000210f21bf21800025428ee3c08",
+      "idx": 25,
+      "titulo": "Piaui ja registrou mais de 6 mil casos de dengue confirmados neste ano",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-06-09",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Eliseu Martins"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Alvorada do Gurgueia"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Itaueira"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Sao Pedro do Piaui"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Angical do Piaui"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Santo Antonio dos Milagres"
+        }
+      ],
+      "observacao": "8 municipios com alta incidencia de dengue em junho/2024. FN estrutural: todos na sentenca sem 'dengue' explicito (apenas 'alta incidencia')."
+    },
+    {
+      "noticia_id": "2aa72e842cccb626ff2838cf8d72521a",
+      "idx": 26,
+      "titulo": "Piaui registra mais duas mortes por dengue e chega a 18 casos",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-06-13",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Jerumenha"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Esperantina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Baixa Grande do Ribeiro"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Joao Costa"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Manoel Emidio"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Floriano"
+        }
+      ],
+      "observacao": "18 obitos por dengue; vitimas de Jerumenha e Esperantina + lista de 8 municipios com mortes confirmadas. FN estrutural: lista de municipios em sentenca sem 'dengue' explicito."
+    },
+    {
+      "noticia_id": "086ccbde4a9eb064a1c1eea448fbba92",
+      "idx": 27,
+      "titulo": "Informe Epidemiologico Dengue, Zika e Chikungunya - Semana Epidemiologica 24 de 2024",
+      "fonte": "SESAPI",
+      "data_publicacao": "2024-06-17",
+      "mencoes_corretas": [],
+      "observacao": "Informe cita acoes de controle vetorial sem nomear municipios especificos no texto reserva."
+    },
+    {
+      "noticia_id": "9ea427e513d2d8f278037c24519a37e2",
+      "idx": 28,
+      "titulo": "Piaui confirma mais uma morte por dengue; Estado chega a 19 vitimas da doenca",
+      "fonte": "Portal O Dia",
+      "data_publicacao": "2024-06-25",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Baixa Grande do Ribeiro"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Esperantina"
+        }
+      ],
+      "observacao": "Municipios com mortes confirmadas: Teresina (3), Bom Jesus (7), Baixa Grande do Ribeiro (2), Esperantina (2). FN estrutural: lista em sentenca sem 'dengue' explicito."
+    },
+    {
+      "noticia_id": "d87aed6c8d94dccc7e4a5f6a77665e6e",
+      "idx": 29,
+      "titulo": "Piaui registra mais um obito por dengue e sobe para 10 o numero de cidades com mortes pela doenca",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-07-12",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Sao Joao do Piaui"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Baixa Grande do Ribeiro"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Esperantina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Joao Costa"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Manoel Emidio"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Floriano"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Jerumenha"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Jose de Freitas"
+        }
+      ],
+      "observacao": "Novo obito associado a Sao Joao do Piaui (sentenca com 'dengue' — pipeline extrai corretamente). Demais 9 municipios em sentenca sem 'dengue' explicito — FN estrutural."
+    },
+    {
+      "noticia_id": "c8d05359ece96c5ee0a35c5319055edf",
+      "idx": 30,
+      "titulo": "Informe Epidemiologico Dengue, Zika e Chikungunya - Semana Epidemiologica 30 de 2024",
+      "fonte": "SESAPI",
+      "data_publicacao": "2024-07-29",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Baixa Grande do Ribeiro"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Esperantina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Floriano"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Jerumenha"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Joao Costa"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Jose de Freitas"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Manoel Emidio"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Sao Joao do Piaui"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        }
+      ],
+      "observacao": "Informe SE30 cita explicitamente 'obitos por dengue em municipios como [lista]' em sentenca unica com 'dengue' — pipeline extrai corretamente todos os 10 pares."
+    },
+    {
+      "noticia_id": "ba005a6cf4295e1bb91c41a3da451598",
+      "idx": 31,
+      "titulo": "Piaui registra reducao nos casos de dengue e zika; notificacoes de chikungunya aumentam 13%",
+      "fonte": "A10+",
+      "data_publicacao": "2024-08-20",
+      "mencoes_corretas": [],
+      "observacao": "Dados apenas em nivel estadual; nenhum municipio especifico nomeado."
+    },
+    {
+      "noticia_id": "3e7712f742166a05c9987bb73808fb6c",
+      "idx": 32,
+      "titulo": "Piaui registra queda de 76% no numero de casos de dengue; casos de zika e chikungunya tambem cairam",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-09-05",
+      "mencoes_corretas": [],
+      "observacao": "Dados em nivel estadual; texto reserva nao especifica municipios."
+    },
+    {
+      "noticia_id": "0b8a980c9bdd55cbbe65b44d5bbf20a3",
+      "idx": 33,
+      "titulo": "Dengue: Piaui tem 29 municipios em estado de alerta",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-11-15",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Alagoinha do Piaui"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Morro Cabeca no Tempo"
+        },
+        {
+          "doenca": "Chikungunya",
+          "municipio": "Alagoinha do Piaui"
+        },
+        {
+          "doenca": "Chikungunya",
+          "municipio": "Morro Cabeca no Tempo"
+        }
+      ],
+      "observacao": "LIRAa/LIA fase 3: Alagoinha do Piaui e Morro Cabeca no Tempo com indice de risco >= 4% para dengue e chikungunya. Sentenca unica contem doenca + municipios — pipeline extrai corretamente."
+    },
+    {
+      "noticia_id": "60c55cb2335aa990274bd21449d64a83",
+      "idx": 34,
+      "titulo": "Saude intensifica campanha contra dengue, zika e chikungunya no Piaui",
+      "fonte": "Ministerio da Saude",
+      "data_publicacao": "2024-12-05",
+      "mencoes_corretas": [],
+      "observacao": "Campanha em nivel estadual; nenhum municipio especifico nomeado."
+    },
+    {
+      "noticia_id": "e619f65039806f1bff1736e9ee28d820",
+      "idx": 35,
+      "titulo": "Piaui registra maior numero de mortes por dengue na ultima decada; 21 obitos em 2024",
+      "fonte": "Cidade Verde",
+      "data_publicacao": "2024-12-10",
+      "mencoes_corretas": [
+        {
+          "doenca": "Dengue",
+          "municipio": "Teresina"
+        },
+        {
+          "doenca": "Dengue",
+          "municipio": "Bom Jesus"
+        }
+      ],
+      "observacao": "Balanco anual 2024: Teresina liderou casos (5113), Bom Jesus liderou obitos (7). FN estrutural: municipios em sentencas sem 'dengue' explicito."
+    }
+  ]
+}
