@@ -1,0 +1,54 @@
+{
+  "nome": "Arboviroses no Piauí",
+  "rotulo_tema": "Doença",
+  "rotulo_tema_plural": "Doenças",
+  "rotulo_auxiliar": "Sintomas",
+  "categorias": {
+    "Dengue": [
+      "dengue",
+      "dengue grave",
+      "dengue com sinais de alarme",
+      "arbovirose dengue"
+    ],
+    "Zika": [
+      "zika",
+      "virus zika",
+      "vírus zika",
+      "zika virus",
+      "febre do zika"
+    ],
+    "Chikungunya": [
+      "chikungunya",
+      "febre chikungunya",
+      "chikungunha",
+      "chikungunya virus"
+    ]
+  },
+  "termos_auxiliares": [
+    "febre",
+    "febre alta",
+    "febre baixa",
+    "dor de cabeca",
+    "dor de cabeça",
+    "dor no corpo",
+    "dor atras dos olhos",
+    "dor atrás dos olhos",
+    "dores articulares",
+    "dor articular",
+    "manchas vermelhas",
+    "exantema",
+    "nausea",
+    "náusea",
+    "vomito",
+    "vômito",
+    "coceira",
+    "mal-estar"
+  ],
+  "palavras_chave_coleta": [
+    "dengue",
+    "zika",
+    "chikungunya",
+    "arbovirose",
+    "aedes"
+  ]
+}

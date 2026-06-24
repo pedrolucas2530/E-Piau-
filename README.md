@@ -6,12 +6,12 @@ O objetivo é demonstrar viabilidade técnica. O sistema não substitui vigilân
 
 ## Funcionalidades
 
-- Coleta de notícias de fontes públicas configuradas: G1 Piauí, Cidade Verde e SESAPI.
+- Coleta de notícias de fontes públicas configuradas: G1 Piauí, Cidade Verde, SESAPI e Meio News.
 - Armazenamento rastreável em SQLite, mantendo texto, data, URL e metadados brutos.
 - NER customizado com spaCy para Dengue, Zika, Chikungunya, municípios do Piauí e sintomas.
 - Heurística de coocorrência por sentença para associar doença e município.
 - Painel com mapa do Piauí, distribuição temporal, distribuição por doença e tabela auditável.
-- Conjunto de sementes reais de janeiro a julho de 2024 para apresentação reprodutível.
+- Conjunto de sementes reais de janeiro a dezembro de 2024 para apresentação reprodutível.
 - Amostra didática offline mantida apenas como reserva.
 
 ## Instalação
@@ -28,7 +28,7 @@ Se o modelo `pt_core_news_lg` não estiver instalado, o código tenta `pt_core_n
 
 ## Execução Rápida
 
-Gera o banco SQLite com notícias/documentos reais de janeiro a julho de 2024 e processa as menções:
+Gera o banco SQLite com notícias/documentos reais de janeiro a dezembro de 2024 e processa as menções:
 
 ```powershell
 python scripts/executar_pipeline.py --modo reais
@@ -45,7 +45,7 @@ streamlit run interface/painel.py
 ### 1. Pré-requisitos
 
 ```powershell
-# Verificar versão do Python (requerido 3.10+)
+# Verificar versão do Python (requerido 3.11+)
 python --version
 
 # Verificar ambiente virtual ativado
@@ -66,7 +66,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 ### 3. Coletar Dados (escolha um modo)
 
 ```powershell
-# Opção A: Usar notícias reais pré-verificadas (janeiro-julho 2024)
+# Opção A: Usar notícias reais pré-verificadas (janeiro-dezembro 2024)
 python scripts/coletar.py --modo reais
 
 # Opção B: Coletar ao vivo dos portais (com filtro de período)
@@ -238,6 +238,16 @@ O SQLite fica em `dados/epipiaui_monitor.sqlite` e contém:
 
 - `noticias`: notícia bruta, fonte, título, texto, data, URL e metadados.
 - `mencoes`: doença, município, sentença, sintomas, confiança e vínculo com a notícia.
+
+## Domínio configurável (tema)
+
+O motor de extração é genérico: ele correlaciona um **tema** com um **município** por co-ocorrência em sentença. O município é o eixo fixo (IBGE); o tema é configurável por um JSON em `config/dominios/`. Por padrão usa-se `arboviroses.json` (Dengue, Zika, Chikungunya), mas é possível trocar o tema sem mudar o código — por exemplo, para criminalidade:
+
+```powershell
+python scripts/processar.py --dominio config/dominios/criminalidade.json
+```
+
+Detalhes, formato do arquivo e pontos de extensão em `docs/dominios.md`.
 
 ## Limitações
 

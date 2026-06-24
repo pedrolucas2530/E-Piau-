@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 
@@ -30,4 +30,7 @@ class MencaoExtraida:
 
 
 def agora_utc_iso() -> str:
-    return datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    return (
+        datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None).isoformat()
+        + "Z"
+    )

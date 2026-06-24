@@ -22,10 +22,10 @@ Após as notícias serem coletadas, a etapa de Processamento Analítico (`script
 - **Reconhecimento de Entidades (NER):** Utilizando o `spaCy` (com fallback de regex simples), o pipeline divide o texto das notícias em sentenças e extrai entidades. Ele mapeia entidades do tipo `DOENCA`, `MUNICIPIO` e `SINTOMA`.
 - **Relacionamento e Cálculo de Confiança:** Quando o sistema encontra uma doença e um município referenciados dentro da mesma frase (sentença), ele gera um registro de "Menção Extraída". Ele então calcula uma nota de confiança (base, incrementada se o título da notícia tiver termos chave ou se múltiplos sintomas forem descritos na frase).
 
-> **Observação de Refatoração (Valores Hardcoded no PLN):**
-> - **Doenças e Variações:** No arquivo `src/epipiaui_monitor/pln/processador.py`, a matriz de doenças é imutável: o dicionário `PADROES_DOENCAS` mapeia explicitamente "Dengue", "Zika" e "Chikungunya" e suas variações.
-> - **Sintomas:** Os sintomas também estão "chumbados" na tupla `PADROES_SINTOMAS` do mesmo arquivo.
-> - **Cidades (Municípios):** A identificação de qual cidade a notícia aborda baseia-se num carregamento feito pelo módulo `src/epipiaui_monitor/piaui.py`. Nele há uma constante chamada `MUNICIPIOS_RESERVA` listando de forma fixa todas as cidades do Piauí. Para adequação a outras regiões, essa fonte de municípios precisa ser desvinculada de restrições por UF.
+> **Configuração do tema (atualizado):**
+> - **Doenças, variações e sintomas:** não estão mais fixos no código. O `src/epipiaui_monitor/pln/processador.py` carrega um **domínio de investigação** (`src/epipiaui_monitor/dominio.py`) a partir de um arquivo JSON em `config/dominios/`. O domínio padrão é `arboviroses.json` (Dengue, Zika, Chikungunya e sintomas), com o mesmo conteúdo de antes; para investigar outro tema, basta trocar o arquivo (ex.: `criminalidade.json`) via `--dominio` ou pela variável `EPIPIAUI_DOMINIO` no painel. Detalhes em `docs/dominios.md`.
+> - **Cidades (Municípios):** continuam sendo o **eixo fixo**, carregadas pelo módulo `src/epipiaui_monitor/piaui.py` (lista oficial de 224 municípios do Piauí via IBGE, com `MUNICIPIOS_RESERVA` como fallback offline). Por opção de projeto, o município permanece a âncora geográfica.
+> - **Coleta de sementes:** o script `buscar_sementes_2024.py` (construtor do corpus fechado) ainda mantém suas próprias constantes `PALAVRAS_CHAVE` e `FONTES`; generalizar essa etapa fica como trabalho futuro.
 
 ## 3. Fluxo Completo da Aplicação
 
@@ -67,5 +67,5 @@ sequenceDiagram
     Processar->>PLN: Passa os textos para processamento analítico
     PLN->>PLN: Identifica Doenças, Sintomas e Municípios na mesma sentença
     PLN-->>Processar: Retorna objetos 'MencaoExtraida' com grau de confiança
-    Processar->>DB: Limpa menções antigas e salva as novas na tabela 'mencoes_extraidas'
+    Processar->>DB: Limpa menções antigas e salva as novas na tabela 'mencoes'
 ```

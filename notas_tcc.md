@@ -53,7 +53,7 @@ O corpus fechado foi escolhido por três razões metodológicas:
 - Modelo base: spaCy `pt_core_news_lg` (com fallback para `md`, `sm` e `blank+sentencizer`)
 - Componente principal: `EntityRuler` com `phrase_matcher_attr="LOWER"` e `overwrite_ents=True`
 - Entidades reconhecidas: `DOENCA`, `SINTOMA`, `MUNICIPIO`
-- Cobertura geográfica: 221 municípios do Piauí (fonte: IBGE)
+- Cobertura geográfica: 224 municípios do Piauí (fonte: IBGE)
 
 ### Doenças monitoradas
 - Dengue (variantes: "dengue grave", "dengue com sinais de alarme", "arbovirose dengue")
@@ -157,6 +157,11 @@ O corpus privilegia Cidade Verde (18/35 artigos). Fontes como Portal O Dia, A10+
 ### L7 — Confiança sub-ótima sem sintomas
 A maioria das menções fica com confiança = 0,70 porque o corpus de texto_reserva não descreve sintomas. No corpus ao vivo, artigos com sintomas descritos pontuariam mais alto (até 0,96).
 
+### L8 — Extensibilidade limitada (valores hardcoded)
+Documentado pelo próprio `docs/manual_resumido.md`: as listas de doenças/palavras-chave (`PALAVRAS_CHAVE` em `buscar_sementes_2024.py`; `PADROES_DOENCAS`, `PADROES_SINTOMAS` em `processador.py`) e a lista de municípios (`MUNICIPIOS_RESERVA` em `piaui.py`) são constantes fixas no código, não configuráveis externamente. O pipeline está acoplado ao recorte Piauí + 3 arboviroses; generalizar para outro estado ou doença exigiria alteração de código-fonte, não apenas configuração.
+
+**Nota documental adicional:** `docs/manual_resumido.md` (linha 70, diagrama sequenceDiagram) descreve a etapa final de processamento como gravando na tabela `mencoes_extraidas` — nome incorreto; a tabela real é `mencoes` (confirmado por consulta direta ao SQLite, ver seção 7). Indica inconsistência de nomenclatura entre a documentação técnica do projeto e o código-fonte, não apenas um erro pontual meu na primeira versão do script de avaliação.
+
 ---
 
 ## 7. Observações sobre o painel (instrumento de investigação)
@@ -200,6 +205,38 @@ A maioria das menções fica com confiança = 0,70 porque o corpus de texto_rese
 - MS suspendeu preventivamente a vacina Butantan após 42 reações severas e 2 mortes suspeitas.
 - Em Teresina: ~2.800 doses recebidas, ~2.300 aplicadas, ~500 recolhidas. Sem complicações nos vacinados locais.
 - FMS aguardou nota técnica do MS; Sesapi orientou municípios sobre o recolhimento.
+
+---
+
+## 8.1 Inventário da pasta — revisão de arquivos não analisados anteriormente
+
+(Revisão feita em 2026-06-20, em resposta a pedido de reanálise da pasta)
+
+### Mudanças "modificadas" no git são cosméticas
+`docs/spec.md`, `docs/manual_resumido.md`, `tests/test_pln.py`, `tests/test_utilitarios.py`, `tests/__init__.py`, `tests/README.md`, `dados/brutos/amostra_noticias.json` e `dados/brutos/sementes_noticias_reais_2024.backup.json` aparecem como modificados no `git status`, mas `git diff --ignore-all-space` retorna vazio para todos — são apenas normalização de quebra de linha (CRLF/LF), sem mudança de conteúdo.
+
+### `docs/spec.md` já incorpora os resultados do gold standard
+O PRD do projeto já cita textualmente os números da avaliação NER que produzi: "A regra rígida de 'co-ocorrência na mesma sentença' garante altíssima Precisão (94.9%), mas prejudica consideravelmente o Recall (42.5%)". Útil para a monografia: mostra que a documentação do projeto já reflete a investigação empírica.
+
+### `buscar_sementes_2024.py` (script raiz, já versionado)
+Script responsável por expandir o corpus fechado de 19 para 35 artigos. Varre RSS do G1 + páginas do Cidade Verde e SESAPI, filtra por palavras-chave de arbovirose (dengue/zika/chikungunya/arbovirose/aedes) exigindo match no título ou URL, tenta baixar HTML real para gerar `texto_reserva`, e grava com backup automático. Relevante para a seção de Metodologia (descreve precisamente como o corpus fechado foi construído).
+
+### `docs/fontes_reais_2024.md` — registro das fontes reais
+Lista as URLs reais usadas no corpus, por fonte (G1, SESAPI, Cidade Verde). Contém uma observação metodológica importante: **"durante a execução local, o domínio cidadeverde.com pode retornar Cloudflare 403 para coleta automatizada. O pipeline preserva as URLs e marca esses registros com `reserva_usada=true` quando não consegue baixar o HTML original."** Isso é evidência documental direta da divergência banco × corpus fechado já registrada na seção 7 — Cidade Verde é a fonte majoritária do corpus (18/35) e é justamente a que mais sofre bloqueio, o que explica por que o modo `--modo reais` cai com frequência para `texto_reserva`.
+
+### `docs/relatorio_tecnico.md` — diagramas de arquitetura (mermaid)
+Contém dois diagramas mermaid: (1) arquitetura geral do pipeline (Fontes → Coleta → Armazenamento → PLN → Extração → Banco → Dashboard) e (2) fluxograma do processamento PLN sentença por sentença (doença? → município? → entity ruler → heurística de co-ocorrência → confiança → MencaoExtraida). Úteis como figuras na seção de Metodologia/Arquitetura da monografia.
+
+### `notebooks/01_fluxo_prototipo.ipynb` e `02_avaliacao_ner.ipynb`
+- **01**: notebook simples (6 células) demonstrando o fluxo coleta → PLN, sem avaliação.
+- **02 — IMPORTANTE, é um rascunho anterior e SUPERADO pelo gold standard atual.** Modificado em 08/05/2026 (anterior à construção do gold standard de 35 artigos/87 menções desta sessão). Usa um "Gold Standard" diferente: apenas **10 notícias sintéticas escritas à mão** (não do corpus real), com avaliação **no nível de entidade** (DOENCA/MUNICIPIO/SINTOMA isolados, por igualdade de string) — não no nível de relação (par doença×município) como o `avaliar_ner.py` atual. **O notebook nunca foi executado**: todas as 7 células de código têm `execution_count: None` e zero outputs salvos. Conclusão: é um protótipo de exploração, não um resultado válido. Não deve ser citado como avaliação na monografia — o gold standard de referência é exclusivamente `dados/gold_standard/gold_standard.json` + `scripts/avaliar_ner.py`. Vale mencionar na monografia como iteração metodológica anterior (mostra evolução do desenho de avaliação: de nível de entidade/amostra sintética para nível de relação/corpus real).
+
+### Arquivos sem relevância para a monografia
+- `dados/.fuse_hidden0000001000000001/2/3`: artefatos temporários do sistema de arquivos (FUSE), gerados por acesso concorrente ao diretório montado. Não são dados do projeto; seguros para ignorar/excluir.
+- `dados/brutos/ao_vivo_2026-*.json` (6 arquivos, 1–2 KB cada): capturas de teste do modo `ao-vivo` puro. Conteúdo majoritariamente ruído — ex.: uma página de rodapé do Cidade Verde sobre Ebola/manguezais, uma coluna de "Naldo Pereira" sem relação com arbovirose. **Achado útil para a monografia:** ilustra concretamente por que a coleta ao vivo pura foi descartada como prioridade — o scraping irrestrito captura muito conteúdo fora do escopo epidemiológico, reforçando a justificativa do corpus fechado curado (seção 2).
+
+### Conclusão da revisão
+Nenhum arquivo novo não-versionado foi encontrado — todos os itens acima já estavam commitados no histórico do git (commits anteriores a esta sessão), apenas não haviam sido revisados por mim. Não há, portanto, trabalho recente de terceiros a reconciliar; o que havia era documentação e scripts de suporte ao corpus que ainda não tinham sido conectados explicitamente às notas de pesquisa.
 
 ---
 

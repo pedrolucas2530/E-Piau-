@@ -12,6 +12,11 @@ CAMINHO_BANCO_PADRAO = DIR_DADOS / "epipiaui_monitor.sqlite"
 CAMINHO_AMOSTRA_NOTICIAS = DIR_DADOS_BRUTOS / "amostra_noticias.json"
 CAMINHO_SEMENTES_REAIS = DIR_DADOS_BRUTOS / "sementes_noticias_reais_2024.json"
 
+# Domínio de investigação (tema configurável). O município permanece fixo;
+# apontar para outro JSON aqui — ou via --dominio — troca o tema investigado.
+DIR_CONFIG = RAIZ_PROJETO / "config"
+CAMINHO_DOMINIO_PADRAO = DIR_CONFIG / "dominios" / "arboviroses.json"
+
 URL_MUNICIPIOS_IBGE = (
     "https://servicodados.ibge.gov.br/api/v1/localidades/estados/22/municipios"
 )

@@ -17,6 +17,7 @@ CACHE_MUNICIPIOS = DIR_DADOS_PROCESSADOS / "municipios_piaui.json"
 
 MUNICIPIOS_RESERVA = [
     {"id": "2200053", "nome": "Acaua"},
+    {"id": "2200103", "nome": "Agricolandia"},
     {"id": "2200202", "nome": "Agua Branca"},
     {"id": "2200251", "nome": "Alagoinha do Piaui"},
     {"id": "2200277", "nome": "Alegrete do Piaui"},

@@ -4,7 +4,7 @@
 
 ```mermaid
 graph LR
-    A["Fontes Públicas<br/>(G1, Cidade Verde, SESAPI)"] -->|Web Scraping| B["Coleta<br/>coletar.py"]
+    A["Fontes Públicas<br/>(G1, Cidade Verde, SESAPI, Meio News)"] -->|Web Scraping| B["Coleta<br/>coletar.py"]
     B --> C["Armazenamento Bruto<br/>(JSON + SQLite)"]
     C --> D["PLN com spaCy<br/>processador.py"]
     D --> E["Extração de Entidades<br/>(Doenças, Municípios, Sintomas)"]
@@ -120,10 +120,11 @@ O `EpiPiauiPLN` encadeia:
    - Extração de sintomas (elevam confiança)
 
 4. **Cálculo de Confiança**
-   - Base: 0.6 (doença + município)
-   - +0.1 (sintoma presente)
-   - +0.1 (termo epidemiológico no título)
-   - Máximo: 0.8
+   - Base: 0.62 (doença + município)
+   - +0.18 (pelo menos um sintoma na sentença)
+   - +0.08 (dois ou mais sintomas na sentença)
+   - +0.08 (termo epidemiológico no título)
+   - Máximo: 0.96
 
 ### 4.3 Interface Web (`interface/painel.py`)
 
@@ -151,7 +152,7 @@ graph LR
 
 O EpiPiaui Monitor foi estruturado como um MVP reprodutível. A coleta, o processamento e a visualização são etapas separadas para facilitar auditoria e repetição dos experimentos.
 
-Na versão atual, o modo principal (`reais`) usa um conjunto de URLs reais localizadas em fontes piauienses entre janeiro e julho de 2024. As sementes ficam em `dados/brutos/sementes_noticias_reais_2024.json`.
+Na versão atual, o modo principal (`reais`) usa um conjunto de URLs reais localizadas em fontes piauienses entre janeiro e dezembro de 2024. As sementes ficam em `dados/brutos/sementes_noticias_reais_2024.json`.
 
 O banco SQLite foi escolhido por ser leve, portátil e suficiente para a prova de conceito. O material bruto fica na tabela `noticias`, enquanto as inferências ficam na tabela `mencoes`.
 
@@ -211,7 +212,7 @@ DOENCA:
 ## 9. Limites Deliberados
 
 - O MVP não realiza coleta contínua.
-- O período-alvo documentado é janeiro a julho de 2024.
+- O período-alvo documentado é janeiro a dezembro de 2024.
 - O painel é exploratório e não deve ser usado como sistema oficial.
 - A amostra sintética permanece apenas como reserva didática; o fluxo padrão usa notícias e informes reais de 2024.
 

@@ -10,69 +10,42 @@ except ImportError:
     spacy = None
     Language = object
 
+from epipiaui_monitor.dominio import DominioInvestigacao, carregar_dominio
 from epipiaui_monitor.modelos import MencaoExtraida, Noticia, agora_utc_iso
 from epipiaui_monitor.piaui import carregar_municipios, indice_municipios
 from epipiaui_monitor.utilitarios import normalizar_chave, unidecode
 
 
-PADROES_DOENCAS: dict[str, tuple[str, ...]] = {
-    "Dengue": (
-        "dengue",
-        "dengue grave",
-        "dengue com sinais de alarme",
-        "arbovirose dengue",
-    ),
-    "Zika": (
-        "zika",
-        "virus zika",
-        "vírus zika",
-        "zika virus",
-        "febre do zika",
-    ),
-    "Chikungunya": (
-        "chikungunya",
-        "febre chikungunya",
-        "chikungunha",
-        "chikungunya virus",
-    ),
-}
-
-PADROES_SINTOMAS: tuple[str, ...] = (
-    "febre",
-    "febre alta",
-    "febre baixa",
-    "dor de cabeca",
-    "dor de cabeça",
-    "dor no corpo",
-    "dor atras dos olhos",
-    "dor atrás dos olhos",
-    "dores articulares",
-    "dor articular",
-    "manchas vermelhas",
-    "exantema",
-    "nausea",
-    "náusea",
-    "vomito",
-    "vômito",
-    "coceira",
-    "mal-estar",
-)
-
-
 class EpiPiauiPLN:
-    """Pipeline de PLN em português com regras epidemiológicas customizadas."""
+    """Pipeline de PLN em português com regras configuráveis por domínio.
 
-    def __init__(self) -> None:
+    O domínio define o tema investigado (doenças, crimes, etc.) e seus
+    vocabulários. Por padrão carrega o domínio de arboviroses, preservando o
+    comportamento histórico do projeto. O município permanece o eixo geográfico
+    fixo, correlacionado ao tema por co-ocorrência em sentença.
+    """
+
+    def __init__(
+        self,
+        dominio: DominioInvestigacao | None = None,
+        caminho_dominio: str | None = None,
+    ) -> None:
+        if dominio is not None:
+            self.dominio = dominio
+        elif caminho_dominio is not None:
+            self.dominio = carregar_dominio(caminho_dominio)
+        else:
+            self.dominio = carregar_dominio()
         self.municipios = carregar_municipios()
         self.municipio_por_chave = indice_municipios(self.municipios)
-        self.doenca_por_chave = {
-            normalizar_chave(apelido): doenca
-            for doenca, apelidos in PADROES_DOENCAS.items()
+        self.tema_por_chave = {
+            normalizar_chave(apelido): categoria
+            for categoria, apelidos in self.dominio.categorias.items()
             for apelido in apelidos
         }
-        self.sintoma_por_chave = {
-            normalizar_chave(sintoma): sintoma.capitalize()
-            for sintoma in PADROES_SINTOMAS
+        self.auxiliar_por_chave = {
+            normalizar_chave(termo): termo.capitalize()
+            for termo in self.dominio.termos_auxiliares
         }
         self.pln = self._carregar_pipeline() if spacy else None
         if self.pln:
@@ -94,37 +67,39 @@ class EpiPiauiPLN:
         vistos: set[tuple[str, str, str]] = set()
 
         titulo_chave = normalizar_chave(noticia.titulo)
-        titulo_tem_termo_epidemiologico = any(
-            chave_doenca in titulo_chave for chave_doenca in self.doenca_por_chave
+        titulo_tem_termo_tema = any(
+            chave_tema in titulo_chave for chave_tema in self.tema_por_chave
         )
 
         for sentenca in documento.sents:
             texto_sentenca = sentenca.text.strip()
             if not texto_sentenca:
                 continue
-            doencas = self._entidades_canonicas(sentenca, "DOENCA", self.doenca_por_chave)
+            temas = self._entidades_canonicas(sentenca, "TEMA", self.tema_por_chave)
             municipios = self._entidades_municipios(sentenca)
-            sintomas = self._entidades_canonicas(sentenca, "SINTOMA", self.sintoma_por_chave)
-            if not doencas or not municipios:
+            auxiliares = self._entidades_canonicas(
+                sentenca, "AUXILIAR", self.auxiliar_por_chave
+            )
+            if not temas or not municipios:
                 continue
 
-            for doenca in doencas:
+            for tema in temas:
                 for municipio in municipios:
-                    chave = (doenca, municipio["nome"], texto_sentenca)
+                    chave = (tema, municipio["nome"], texto_sentenca)
                     if chave in vistos:
                         continue
                     vistos.add(chave)
                     resultados.append(
                         MencaoExtraida(
                             noticia_id=noticia.id,
-                            doenca=doenca,
+                            doenca=tema,
                             municipio=municipio["nome"],
                             codigo_municipio=municipio["id"],
                             sentenca=texto_sentenca,
-                            sintomas=sorted(sintomas),
+                            sintomas=sorted(auxiliares),
                             confianca=self._calcular_confianca(
-                                sintomas=sintomas,
-                                titulo_tem_termo_epidemiologico=titulo_tem_termo_epidemiologico,
+                                auxiliares=auxiliares,
+                                titulo_tem_termo_tema=titulo_tem_termo_tema,
                             ),
                             extraido_em=agora_utc_iso(),
                         )
@@ -154,11 +129,11 @@ class EpiPiauiPLN:
             regras = pln.add_pipe("entity_ruler", config=configuracao)
 
         padroes = []
-        for doenca, apelidos in PADROES_DOENCAS.items():
+        for categoria, apelidos in self.dominio.categorias.items():
             for apelido in apelidos:
-                padroes.append({"label": "DOENCA", "pattern": apelido, "id": doenca})
-        for sintoma in PADROES_SINTOMAS:
-            padroes.append({"label": "SINTOMA", "pattern": sintoma, "id": sintoma})
+                padroes.append({"label": "TEMA", "pattern": apelido, "id": categoria})
+        for termo in self.dominio.termos_auxiliares:
+            padroes.append({"label": "AUXILIAR", "pattern": termo, "id": termo})
         for municipio in self.municipios:
             nomes = {municipio["nome"], unidecode(municipio["nome"])}
             for nome in nomes:
@@ -201,15 +176,15 @@ class EpiPiauiPLN:
 
     @staticmethod
     def _calcular_confianca(
-        sintomas: set[str],
-        titulo_tem_termo_epidemiologico: bool,
+        auxiliares: set[str],
+        titulo_tem_termo_tema: bool,
     ) -> float:
         confianca = 0.62
-        if sintomas:
+        if auxiliares:
             confianca += 0.18
-        if len(sintomas) >= 2:
+        if len(auxiliares) >= 2:
             confianca += 0.08
-        if titulo_tem_termo_epidemiologico:
+        if titulo_tem_termo_tema:
             confianca += 0.08
         return min(round(confianca, 2), 0.96)
 
@@ -221,8 +196,8 @@ class EpiPiauiPLN:
         resultados: list[MencaoExtraida] = []
         vistos: set[tuple[str, str, str]] = set()
         titulo_chave = normalizar_chave(noticia.titulo)
-        titulo_tem_termo_epidemiologico = any(
-            chave_doenca in titulo_chave for chave_doenca in self.doenca_por_chave
+        titulo_tem_termo_tema = any(
+            chave_tema in titulo_chave for chave_tema in self.tema_por_chave
         )
 
         for texto_sentenca in re.split(r"(?<=[.!?])\s+", texto):
@@ -231,41 +206,41 @@ class EpiPiauiPLN:
             if not chave_sentenca:
                 continue
 
-            doencas = {
-                doenca
-                for chave_doenca, doenca in self.doenca_por_chave.items()
-                if chave_doenca in chave_sentenca
+            temas = {
+                tema
+                for chave_tema, tema in self.tema_por_chave.items()
+                if chave_tema in chave_sentenca
             }
-            sintomas = {
-                sintoma
-                for chave_sintoma, sintoma in self.sintoma_por_chave.items()
-                if chave_sintoma in chave_sentenca
+            auxiliares = {
+                auxiliar
+                for chave_auxiliar, auxiliar in self.auxiliar_por_chave.items()
+                if chave_auxiliar in chave_sentenca
             }
             municipios = [
                 municipio
                 for chave_municipio, municipio in self.municipio_por_chave.items()
                 if chave_municipio in chave_sentenca
             ]
-            if not doencas or not municipios:
+            if not temas or not municipios:
                 continue
 
-            for doenca in doencas:
+            for tema in temas:
                 for municipio in municipios:
-                    chave = (doenca, municipio["nome"], texto_sentenca)
+                    chave = (tema, municipio["nome"], texto_sentenca)
                     if chave in vistos:
                         continue
                     vistos.add(chave)
                     resultados.append(
                         MencaoExtraida(
                             noticia_id=noticia.id,
-                            doenca=doenca,
+                            doenca=tema,
                             municipio=municipio["nome"],
                             codigo_municipio=municipio["id"],
                             sentenca=texto_sentenca,
-                            sintomas=sorted(sintomas),
+                            sintomas=sorted(auxiliares),
                             confianca=self._calcular_confianca(
-                                sintomas=sintomas,
-                                titulo_tem_termo_epidemiologico=titulo_tem_termo_epidemiologico,
+                                auxiliares=auxiliares,
+                                titulo_tem_termo_tema=titulo_tem_termo_tema,
                             ),
                             extraido_em=agora_utc_iso(),
                         )

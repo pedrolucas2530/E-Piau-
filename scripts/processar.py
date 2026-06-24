@@ -27,6 +27,12 @@ def interpretar_argumentos() -> argparse.Namespace:
         default=str(CAMINHO_BANCO_PADRAO),
         help="Caminho do SQLite.",
     )
+    analisador.add_argument(
+        "--dominio",
+        dest="caminho_dominio",
+        default=None,
+        help="Caminho de um JSON de dominio (tema investigado). Padrao: arboviroses.",
+    )
     return analisador.parse_args()
 
 
@@ -56,7 +62,7 @@ def main() -> None:
         print("Nenhuma noticia encontrada. Execute scripts/coletar.py primeiro.")
         return
 
-    processador = EpiPiauiPLN()
+    processador = EpiPiauiPLN(caminho_dominio=argumentos.caminho_dominio)
     mencoes = processador.processar_noticias(registros_para_noticias(registros))
     limpar_mencoes(caminho_banco)
     salvas = substituir_mencoes(mencoes, caminho_banco=caminho_banco)

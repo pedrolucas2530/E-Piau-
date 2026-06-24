@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -28,9 +29,16 @@ from epipiaui_monitor.configuracao import (
     DIR_DADOS_PROCESSADOS,
     URL_GEOJSON_IBGE,
 )
+from epipiaui_monitor.dominio import carregar_dominio
 
 
 CACHE_GEOJSON = DIR_DADOS_PROCESSADOS / "piaui_municipios.geojson"
+
+# Rótulos da aba de análise seguem o domínio configurado (tema investigado).
+# Brecha: defina a variável de ambiente EPIPIAUI_DOMINIO=caminho/para/dominio.json
+# antes de iniciar o painel para investigar outro tema — rótulos, gráficos e mapa
+# se ajustam automaticamente ao domínio escolhido.
+DOMINIO = carregar_dominio(os.environ.get("EPIPIAUI_DOMINIO") or None)
 
 
 st.set_page_config(
@@ -244,7 +252,7 @@ def main() -> None:
         with st.sidebar:
             st.header("Filtros")
             doencas = sorted(mencoes["doenca"].dropna().unique())
-            doencas_selecionadas = st.multiselect("Doença", doencas, default=doencas)
+            doencas_selecionadas = st.multiselect(DOMINIO.rotulo_tema, doencas, default=doencas)
 
             fontes = sorted(mencoes["fonte"].dropna().unique())
             fontes_selecionadas = st.multiselect("Fonte", fontes, default=fontes)
@@ -318,7 +326,7 @@ def main() -> None:
         metricas[0].metric("Notícias", int(filtradas["noticia_id"].nunique()))
         metricas[1].metric("Menções", int(len(filtradas)))
         metricas[2].metric("Municípios", int(filtradas["municipio"].nunique()))
-        metricas[3].metric("Doenças", int(filtradas["doenca"].nunique()))
+        metricas[3].metric(DOMINIO.rotulo_tema_plural, int(filtradas["doenca"].nunique()))
 
         coluna_mapa, coluna_graficos = st.columns([1.35, 1])
         with coluna_mapa:
@@ -326,7 +334,7 @@ def main() -> None:
             st_folium(construir_mapa(filtradas), height=540, use_container_width=True)
 
         with coluna_graficos:
-            st.subheader("Distribuição por doença")
+            st.subheader(f"Distribuição por {DOMINIO.rotulo_tema.lower()}")
             contagem_doencas = (
                 filtradas.groupby("doenca")
                 .size()
@@ -339,7 +347,7 @@ def main() -> None:
                     x="doenca",
                     y="mencoes",
                     color="doenca",
-                    labels={"doenca": "Doença", "mencoes": "Menções"},
+                    labels={"doenca": DOMINIO.rotulo_tema, "mencoes": "Menções"},
                 )
                 grafico_doencas.update_layout(showlegend=False, margin=dict(l=0, r=0, t=20, b=0))
                 st.plotly_chart(grafico_doencas, use_container_width=True)
@@ -360,7 +368,7 @@ def main() -> None:
                     y="mencoes",
                     color="doenca",
                     markers=True,
-                    labels={"mes": "Mês", "mencoes": "Menções", "doenca": "Doença"},
+                    labels={"mes": "Mês", "mencoes": "Menções", "doenca": DOMINIO.rotulo_tema},
                 )
                 grafico_tempo.update_layout(margin=dict(l=0, r=0, t=20, b=0))
                 st.plotly_chart(grafico_tempo, use_container_width=True)
@@ -396,7 +404,7 @@ def main() -> None:
                 "data_publicacao": "Data",
                 "fonte": "Fonte",
                 "titulo": "Título",
-                "doenca": "Doença",
+                "doenca": DOMINIO.rotulo_tema,
                 "municipio": "Município",
                 "sintomas": "Sintomas",
                 "confianca": "Confiança",
@@ -438,7 +446,7 @@ Seu objetivo é validar a viabilidade técnica de um fluxo integrado de:
             
             st.subheader("Período de dados")
             st.write("""
-Os dados processados cobrem o período de **janeiro a julho de 2024**, 
+Os dados processados cobrem o período de **janeiro a dezembro de 2024**,
 com foco especial em arboviroses (Dengue, Zika, Chikungunya) no estado do Piauí.
             """)
         
@@ -484,6 +492,7 @@ Os dados são coletados de fontes públicas do Piauí:
 - **G1 Piauí**: Portal de notícias
 - **Cidade Verde**: Mídia regional
 - **SESAPI**: Boletins epidemiológicos oficiais
+- **Meio News**: Portal regional (fonte configurada para coleta ao vivo)
 
 O processo usa web scraping automatizado com tratamento de erros e normalização.
             """)
@@ -511,12 +520,15 @@ As menções refletem:
         with st.expander("Como interpretar a 'Confiança'?"):
             st.write("""
 A confiança é uma pontuação de 0 a 1 calculada por:
-- **Base**: 0.6 se doença + município aparecem na mesma sentença
-- **+0.1**: Se há pelo menos um sintoma mencionado
-- **+0.1**: Se doença aparece no título da notícia
-- **Máximo**: 0.8
+- **Base**: 0.62 quando doença + município aparecem na mesma sentença
+- **+0.18**: Se há pelo menos um sintoma na sentença
+- **+0.08**: Se há dois ou mais sintomas na sentença
+- **+0.08**: Se o título contém termo epidemiológico
+- **Máximo**: 0.96
 
-Menções com confiança > 0.7 são mais confiáveis.
+No corpus fechado a maioria das menções fica em 0.70 (base + título), pois os
+textos de reserva raramente descrevem sintomas; valores acima disso indicam
+sintomas presentes na sentença.
             """)
         
         st.divider()
@@ -528,7 +540,6 @@ Menções com confiança > 0.7 são mais confiáveis.
 - Integrar dados de vigilância oficial para comparação
 - Documentação de API para integração com sistemas externos
         """)
-
 
 
 if __name__ == "__main__":

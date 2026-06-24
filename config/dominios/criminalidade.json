@@ -1,0 +1,57 @@
+{
+  "nome": "Criminalidade no Piauí",
+  "rotulo_tema": "Crime",
+  "rotulo_tema_plural": "Crimes",
+  "rotulo_auxiliar": "Indicadores",
+  "categorias": {
+    "Homicídio": [
+      "homicídio",
+      "homicidio",
+      "assassinato",
+      "latrocínio",
+      "latrocinio",
+      "morte violenta"
+    ],
+    "Roubo": [
+      "roubo",
+      "assalto",
+      "roubo a mão armada"
+    ],
+    "Furto": [
+      "furto",
+      "furtos"
+    ],
+    "Tráfico de drogas": [
+      "tráfico de drogas",
+      "trafico de drogas",
+      "tráfico",
+      "trafico",
+      "narcotráfico"
+    ],
+    "Feminicídio": [
+      "feminicídio",
+      "feminicidio"
+    ]
+  },
+  "termos_auxiliares": [
+    "arma de fogo",
+    "facção",
+    "faccao",
+    "vítima",
+    "vitima",
+    "prisão",
+    "prisao",
+    "flagrante",
+    "apreensão",
+    "apreensao"
+  ],
+  "palavras_chave_coleta": [
+    "homicídio",
+    "assassinato",
+    "roubo",
+    "furto",
+    "tráfico",
+    "violência",
+    "crime"
+  ]
+}

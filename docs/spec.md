@@ -14,7 +14,7 @@ O **EpiPiauí Monitor** é um MVP e instrumento de pesquisa concebido para valid
 
 ## 2. Requisitos Funcionais (RF)
 
-- **RF01 - Coleta de Fontes Públicas:** O sistema deve extrair publicações e artigos de portais pré-configurados (G1 Piauí, Cidade Verde e Secretaria de Saúde - SESAPI).
+- **RF01 - Coleta de Fontes Públicas:** O sistema deve extrair publicações e artigos de portais pré-configurados (G1 Piauí, Cidade Verde, Secretaria de Saúde - SESAPI e Meio News).
 - **RF02 - Modos de Coleta Flexíveis:** Deve ser possível rodar o sistema em múltiplos modos:
   - *Sementes/Reais:* Baseado em um corpus fechado (JSON) pré-verificado para garantia de reprodutibilidade da pesquisa.
   - *Ao Vivo:* Web scraping ativo de URLs em tempo real (filtrado por período).
@@ -22,7 +22,7 @@ O **EpiPiauí Monitor** é um MVP e instrumento de pesquisa concebido para valid
 - **RF03 - Armazenamento Bruto:** A ferramenta deve registrar a versão integral e não processada do conteúdo coletado (texto, data, título, URL e metadados) para garantir total rastreabilidade.
 - **RF04 - Reconhecimento de Entidades Nomeadas (NER):** O pipeline de Processamento de Linguagem Natural (PLN) deve identificar especificamente:
   - Doenças (Dengue, Zika, Chikungunya e sinônimos).
-  - Municípios (Lista oficial de 221 municípios do IBGE para o Piauí).
+  - Municípios (Lista oficial de 224 municípios do IBGE para o Piauí).
   - Sintomas associados.
 - **RF05 - Associação Heurística de Menções:** O sistema deve relacionar uma doença a um município apenas se ambos co-ocorrerem na mesma sentença, mitigando falsos positivos.
 - **RF06 - Cálculo de Nível de Confiança:** Cada menção extraída deve receber um escore numérico de confiança. O cálculo considerará pesos base, presença de sintomas na mesma sentença e termos epidemiológicos no título.
@@ -48,7 +48,7 @@ O **EpiPiauí Monitor** é um MVP e instrumento de pesquisa concebido para valid
 A arquitetura escolhida por "oMacaxeira" prioriza simplicidade, transparência nos algoritmos analíticos (rule-based) e facilidade de implantação local.
 
 ### 4.1. Stack Tecnológico
-- **Linguagem:** Python 3.10+
+- **Linguagem:** Python 3.11+
 - **Processamento de Linguagem Natural:** `spaCy`
 - **Banco de Dados:** `SQLite` (relacional, embutido e serverless)
 - **Frontend / UI:** `Streamlit` integrado com bibliotecas de mapa interativo (`Folium`/`Leaflet`)

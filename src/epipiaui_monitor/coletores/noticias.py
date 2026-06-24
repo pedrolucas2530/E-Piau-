@@ -32,9 +32,11 @@ class ColetorNoticias:
         self,
         fontes: tuple[ConfiguracaoFonte, ...] = FONTES_NOTICIAS,
         tempo_limite: int = 20,
+        palavras_chave: tuple[str, ...] | None = None,
     ) -> None:
         self.fontes = fontes
         self.tempo_limite = tempo_limite
+        self.palavras_chave = palavras_chave
         self.sessao = requests.Session()
         self.sessao.headers.update(
             {
@@ -144,7 +146,8 @@ class ColetorNoticias:
         pagina = interpretar_html(resposta.text)
         urls: list[str] = []
         host_fonte = urlparse(fonte.url_base).netloc.replace("www.", "")
-        palavras = tuple(normalizar_chave(palavra) for palavra in fonte.palavras_chave_link)
+        palavras_fonte = self.palavras_chave if self.palavras_chave else fonte.palavras_chave_link
+        palavras = tuple(normalizar_chave(palavra) for palavra in palavras_fonte)
 
         for ancora in pagina.find_all("a", href=True):
             href = url_canonica(ancora.get("href", ""), fonte.url_base)
