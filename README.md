@@ -40,6 +40,32 @@ Abre o painel:
 streamlit run interface/painel.py
 ```
 
+## Reprodução da avaliação (TCC)
+
+Esta seção permite reexecutar a avaliação quantitativa relatada na monografia e reobter exatamente as métricas da **Tabela 3** (desempenho do NER). A avaliação é determinística e roda sobre o corpus fechado (`dados/brutos/sementes_noticias_reais_2024.json`) e o Padrão-Ouro anotado manualmente (`dados/gold_standard/gold_standard.json`).
+
+### Métricas principais (Tabela 3)
+
+```powershell
+python scripts/avaliar_ner.py
+```
+
+Imprime a tabela de Precisão, Revocação e F1 (por doença e agregada) e atualiza `dados/gold_standard/resultado_avaliacao.json`. Resultado esperado (agregado):
+
+```
+GERAL   VP=37  FP=2  FN=50   P=94,9%  R=42,5%  F1=58,7%
+```
+
+### Análises complementares
+
+```powershell
+python scripts/analises_complementares.py
+```
+
+Reproduz as análises de rigor discutidas na monografia: (d) validade discriminativa do escore de confiança (VP e FP com escore idêntico de 0,70); (c) trade-off da janela de associação (janela de documento: P=64,9%, R=100%, F1=78,7%, como contraexemplo controlado); e os intervalos de confiança de 95% por *bootstrap* (10.000 reamostras).
+
+> **Observação sobre reprodutibilidade:** os números da monografia foram obtidos com o modelo `pt_core_news_lg`. Versões diferentes do spaCy podem alterar contagens marginais; para reobter os valores exatos, utilize as versões fixadas em `requirements.txt`.
+
 ## Instruções Técnicas Completas
 
 ### 1. Pré-requisitos

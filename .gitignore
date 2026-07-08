@@ -26,3 +26,8 @@ dados/processados/*.json
 
 # Streamlit
 .streamlit/secrets.toml
+notas_tcc.md
+notas_tcc.md
+
+# Artefatos de montagem
+dados/.fuse_hidden*
